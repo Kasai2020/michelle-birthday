@@ -145,6 +145,17 @@ open http://localhost:8000/tests/preview.html   # every screen with fake data
 `tests/scoring.test.mjs` is worth running after you edit `content.js` — it
 catches typos like an `answer` index pointing past the end of `options`.
 
+To check the security rules, run them against the Firebase emulator:
+
+```bash
+npm i -D firebase-tools firebase @firebase/rules-unit-testing
+npx firebase emulators:start --only database --project michelle-bday
+node tests/rules.test.mjs       # in a second terminal
+```
+
+23 assertions covering who may read the answer pile, who may set scores, and
+what a guest with devtools open can and can't do.
+
 ---
 
 ## Data model
@@ -159,9 +170,17 @@ rooms/{CODE}
 ```
 
 `phase` walks through `lobby → intro → question → reveal → race → … → final`.
-Only the host writes `state`, `results`, and other players' scores; a player
-can only write their own answer. Countdowns are computed from Firebase's
-server clock, so phones with drifting clocks stay in sync.
+Countdowns are computed from Firebase's server clock, so phones with drifting
+clocks stay in sync.
+
+The rules enforce that a player can only ever write their **own** answer and
+their own name/avatar/presence. Only the host can write `state`, `results`,
+and anyone's `score` — so a guest with devtools open can't award themselves
+points. `rooms/{CODE}` itself is deliberately unreadable; that's what keeps
+the answer pile visible to the host alone while a question is live.
+
+The rules file can't carry comments — Firebase treats any key that isn't
+`.read`/`.write`/`.validate`/`.indexOn` as a child path and rejects the file.
 
 ### Free-tier headroom
 
