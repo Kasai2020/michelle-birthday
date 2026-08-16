@@ -17,7 +17,7 @@ export function render(step, ctx) {
           type: "button",
           "aria-pressed": String(ctx.myAnswer === i),
           disabled: ctx.locked,
-          onclick: () => ctx.submit(i),
+          onclick: () => ctx.submit(i, true),
         },
           el("span.badge", {}, LETTERS[i]),
           el("span", {}, text)))));

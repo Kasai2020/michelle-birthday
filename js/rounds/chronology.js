@@ -23,8 +23,20 @@ export function render(step, ctx) {
   let picks = Array.isArray(ctx.myAnswer) ? ctx.myAnswer.slice() : [];
 
   const list = el("div.chrono-list");
+  const lockBtn = el("button.btn.btn-primary", {
+    type: "button",
+    onclick: () => ctx.submit(picks.slice(), true),
+  }, "Lock it in");
 
   const paint = () => {
+    // Ordering everything is what enables the lock — a partial answer is
+    // still saved for partial credit, it just can't end the round early.
+    const complete = picks.length === q.items.length;
+    lockBtn.disabled = ctx.locked || !complete;
+    lockBtn.textContent = complete
+      ? "Lock it in"
+      : `Place all ${q.items.length} to lock in (${picks.length}/${q.items.length})`;
+
     list.replaceChildren(...order.map((origIdx) => {
       const at = picks.indexOf(origIdx);
       return el("button.chrono-item", {
@@ -48,6 +60,7 @@ export function render(step, ctx) {
     el("div.qtext", {}, q.q),
     el("p.muted.small", {}, "Tap in order — earliest first. Tap a numbered item to undo from there."),
     list,
+    lockBtn,
     el("button.btn.btn-ghost", {
       type: "button", disabled: ctx.locked,
       onclick: () => { picks = []; ctx.submit([]); paint(); },

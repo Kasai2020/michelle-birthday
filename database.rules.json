@@ -49,6 +49,17 @@
           }
         },
 
+        "locked": {
+          ".read": "auth != null",
+          ".write": "auth != null && root.child('rooms/' + $code + '/hostId').val() === auth.uid",
+          "$step": {
+            "$pid": {
+              ".write": "auth != null && ($pid === auth.uid || root.child('rooms/' + $code + '/hostId').val() === auth.uid)",
+              ".validate": "newData.isBoolean()"
+            }
+          }
+        },
+
         "results": {
           ".read": "auth != null",
           ".write": "auth != null && root.child('rooms/' + $code + '/hostId').val() === auth.uid"

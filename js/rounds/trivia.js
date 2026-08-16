@@ -16,13 +16,15 @@ export function render(step, ctx) {
           type: "button",
           "aria-pressed": String(ctx.myAnswer === i),
           disabled: ctx.locked,
-          onclick: () => ctx.submit(i),
+          // Tapping an option is final, the same way it is in a pub quiz —
+          // that's what lets the round end as soon as everyone has picked.
+          onclick: () => ctx.submit(i, true),
         },
           el("span.badge", {}, LETTERS[i]),
           el("span", {}, text))
       )),
-    ctx.myAnswer !== null && el("p.muted.small.center", { style: "margin-top:14px" },
-      "Locked in — you can still change it until time's up."));
+    !ctx.locked && el("p.muted.small.center", { style: "margin-top:14px" },
+      "Tap an answer to lock it in."));
 }
 
 export function score(step, answers, { state }) {

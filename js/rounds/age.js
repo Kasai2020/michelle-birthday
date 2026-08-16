@@ -15,6 +15,8 @@ export function render(step, ctx) {
     type: "range", min, max, step: 1, value,
     disabled: ctx.locked,
     oninput: (e) => { value = +e.target.value; display.textContent = String(value); },
+    // Saved as you slide so a timeout still scores your latest guess, but
+    // not marked finished until you tap the button.
     onchange: () => ctx.submit(value),
   });
 
@@ -33,10 +35,12 @@ export function render(step, ctx) {
     slider,
     el("div.stepper", {},
       el("button.btn.btn-ghost", { type: "button", disabled: ctx.locked, onclick: nudge(-1) }, "−1"),
-      el("button.btn.btn-primary", { type: "button", disabled: ctx.locked, onclick: () => ctx.submit(value) }, "Lock it in"),
+      el("button.btn.btn-primary", {
+        type: "button", disabled: ctx.locked, onclick: () => ctx.submit(value, true),
+      }, "Lock it in"),
       el("button.btn.btn-ghost", { type: "button", disabled: ctx.locked, onclick: nudge(1) }, "+1")),
     el("p.muted.small.center", { style: "margin-top:12px" },
-      ctx.myAnswer !== null ? `Your guess: ${ctx.myAnswer}` : "Slide, then lock it in"));
+      ctx.locked ? `Locked in: ${ctx.myAnswer}` : "Slide to your guess, then lock it in"));
 }
 
 export function score(step, answers) {

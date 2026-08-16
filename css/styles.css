@@ -199,6 +199,21 @@ input:focus { outline: none; border-color: var(--pink); }
 
 .host-bar { position: sticky; bottom: 8px; margin-top: 14px; }
 
+/* Who the room is still waiting on. */
+.lockbar {
+  display: flex; align-items: center; gap: 10px;
+  margin: 0 0 14px; padding: 8px 12px;
+  border-radius: 999px; background: rgba(0,0,0,.28); border: 1px solid var(--line);
+}
+.lockbar .lb-count { font-size: 13px; font-weight: 800; color: var(--muted); white-space: nowrap; }
+.lockbar .lb-dots { display: flex; flex-wrap: wrap; gap: 5px; margin-left: auto; }
+.lockbar .lb-dot {
+  font-size: 17px; line-height: 1;
+  opacity: .28; filter: grayscale(1);
+  transition: opacity .25s ease, filter .25s ease, transform .25s ease;
+}
+.lockbar .lb-dot.ready { opacity: 1; filter: none; transform: scale(1.12); }
+
 /* ── Round intro ───────────────────────────────────────────────────── */
 
 .intro { text-align: center; padding: 40px 12px; }

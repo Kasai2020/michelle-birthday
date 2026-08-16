@@ -134,6 +134,21 @@ export const setState = (code, state) => set(stateRef(code), state);
 export const submitAnswer = (code, step, pid, value) =>
   set(answerRef(code, step, pid), { v: value, t: now() });
 
+/**
+ * Player: flag that they're finished with this step.
+ *
+ * Kept in a separate node from the answer itself because everyone can read
+ * this one — it drives the "3 of 5 locked in" indicator and tells the host
+ * when it's safe to advance. The answers stay host-only so nobody can peek.
+ * A half-finished answer (three of five events ordered) is saved but not
+ * locked, so it can't end the round early.
+ */
+export const setLocked = (code, step, pid, done) =>
+  set(ref(db, `rooms/${code}/locked/${step}/${pid}`), done ? true : null);
+
+export const watchLocked = (code, step, cb) =>
+  onValue(ref(db, `rooms/${code}/locked/${step}`), (s) => cb(s.val() || {}));
+
 export const getAnswers = async (code, step) =>
   (await get(answersRef(code, step))).val() || {};
 
@@ -161,6 +176,7 @@ export async function resetRoom(code) {
   const patch = {};
   for (const pid of Object.keys(snap.val() || {})) patch[`players/${pid}/score`] = 0;
   patch.answers = null;
+  patch.locked = null;
   patch.results = null;
   patch.state = LOBBY_STATE;
   await update(roomRef(code), patch);   // multi-path: each key is checked against its own rule

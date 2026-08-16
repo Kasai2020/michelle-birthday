@@ -10,8 +10,8 @@
 import { isConfigured } from "./config.js";
 import {
   authReady, now, createRoom, joinRoom, roomExists, trackPresence, leaveRoom,
-  watchHostId, watchPlayers, watchState, watchResults, watchAnswers,
-  setState, submitAnswer, getAnswers, publishResult, applyScores, resetRoom,
+  watchHostId, watchPlayers, watchState, watchResults, watchAnswers, watchLocked,
+  setState, submitAnswer, setLocked, getAnswers, publishResult, applyScores, resetRoom,
 } from "./db.js";
 import { el, $, mount, showScreen, toast, waiting, playerChip, clamp, confetti } from "./ui.js";
 import { roundModule } from "./rounds/index.js";
@@ -38,10 +38,11 @@ let room = { code: null, hostId: null, players: {}, state: null, results: {} };
 let isHost = false;
 
 let myAnswer = null;        // my answer for the current step
+let myLocked = false;       // have I finished this step?
 let stageKey = "";          // rebuild the stage only when this changes
 let unsubs = [];            // active firebase listeners
-let answerUnsub = null;     // host-only listener on the current step's answers
-let watchedStep = null;     // which step answerUnsub is pointed at
+let stepUnsubs = [];        // listeners scoped to the current step
+let watchedStep = null;     // which step stepUnsubs are pointed at
 let tickHandle = null;      // countdown interval
 let advancing = false;      // guards against double phase transitions
 
@@ -164,7 +165,7 @@ function wireButtons() {
 // ── Room subscription ────────────────────────────────────────────────
 
 async function enterRoom(code) {
-  room = { code, hostId: null, players: {}, state: null, results: {} };
+  room = { code, hostId: null, players: {}, state: null, results: {}, answers: {}, locked: {} };
   store.set("mb:session", { code });
   await trackPresence(code, me.id).catch(() => {});
 
@@ -173,7 +174,7 @@ async function enterRoom(code) {
     watchHostId(code, (hostId) => {
       room.hostId = hostId;
       isHost = hostId === me.id;
-      ensureAnswerWatch();
+      ensureStepWatches(true);
       render();
     }),
     watchPlayers(code, (players) => { room.players = players; render(); }),
@@ -202,32 +203,41 @@ function onStateChange(state) {
 
   if (!prev || prev.step !== state?.step) {
     myAnswer = null;         // new question, clean slate
+    myLocked = false;
     room.answers = {};
+    room.locked = {};
   }
-  ensureAnswerWatch();
+  ensureStepWatches();
   advancing = false;
   render();
 }
 
 /**
- * Only the host reads the answer pile (the security rules hide it from
- * everyone else, so subscribing as a player would just throw). Re-points
- * at the current step whenever the step or the host identity changes.
+ * Re-points the per-step listeners whenever the step (or who's host) changes.
+ *
+ * Everyone watches `locked` — it drives the "who's ready" bar. Only the host
+ * watches `answers`, because the rules hide that node from players, so a
+ * player subscribing to it would just get a permission error.
  */
-function ensureAnswerWatch() {
+function ensureStepWatches(force = false) {
   const st = room.state;
-  const want = isHost && st && st.step >= 0 ? st.step : null;
-  if (want === watchedStep) return;
+  const want = st && st.step >= 0 ? st.step : null;
+  if (want === watchedStep && !force) return;
 
-  answerUnsub?.();
-  answerUnsub = null;
+  stepUnsubs.forEach((u) => u());
+  stepUnsubs = [];
   watchedStep = want;
   if (want === null) return;
 
-  answerUnsub = watchAnswers(room.code, want, (answers) => {
-    room.answers = answers;
+  stepUnsubs.push(watchLocked(room.code, want, (locked) => {
+    room.locked = locked;
+    renderLockBar();
     maybeAutoReveal();
-  });
+  }));
+
+  if (isHost) {
+    stepUnsubs.push(watchAnswers(room.code, want, (answers) => { room.answers = answers; }));
+  }
 }
 
 // ── Host: phase machine ──────────────────────────────────────────────
@@ -252,18 +262,29 @@ function askQuestion(i) {
   write({ phase: "question", step: i, sub: "", startedAt: now(), endsAt: now() + step.duration * 1000 });
 }
 
-/** Host advances when the clock runs out or everyone present has answered. */
+/**
+ * Host advances when the clock runs out, or when every player has explicitly
+ * locked in.
+ *
+ * Counts *all* players, not just the ones currently flagged online. A phone
+ * that sleeps or backgrounds its tab fires onDisconnect and goes offline for
+ * a few seconds, and letting that shrink the denominator used to end rounds
+ * the moment one person answered. The timer is the backstop for someone who
+ * has genuinely wandered off, and the host can always hit "Skip ahead".
+ */
 function maybeAutoReveal() {
   if (!isHost || advancing) return;
   const st = room.state;
   if (st?.phase !== "question") return;
 
-  const answered = Object.keys(room.answers || {}).length;
-  const present = Object.values(room.players || {}).filter((p) => p.online !== false).length;
-  const timeUp = now() >= (st.endsAt || 0);
-
-  if (timeUp || (present > 0 && answered >= present)) doReveal();
+  const { ready, total } = lockCount();
+  if (now() >= (st.endsAt || 0) || (total > 0 && ready >= total)) doReveal();
 }
+
+const lockCount = () => ({
+  ready: Object.values(room.locked || {}).filter(Boolean).length,
+  total: Object.keys(room.players || {}).length,
+});
 
 async function doReveal() {
   if (advancing) return;
@@ -351,7 +372,26 @@ function render() {
   $("#timer-fill").parentElement.hidden = st.phase !== "question";
   $("#btn-next").textContent = st.phase === "question" ? "Skip ahead ▸" : "Next ▸";
 
+  renderLockBar();
   renderStage();
+}
+
+/** "3 of 5 locked in" — so nobody has to guess who the room is waiting on. */
+function renderLockBar() {
+  const bar = $("#lockbar");
+  const st = room.state;
+  if (!st || st.phase !== "question") { bar.hidden = true; return; }
+
+  const { ready, total } = lockCount();
+  bar.hidden = false;
+  mount(bar,
+    el("span.lb-count", {}, `${ready} of ${total} locked in`),
+    el("span.lb-dots", {},
+      Object.entries(room.players || {}).map(([pid, p]) =>
+        el("span.lb-dot", {
+          class: room.locked?.[pid] ? "ready" : "",
+          title: p.name,
+        }, p.avatar || "🙂"))));
 }
 
 function renderLobby() {
@@ -369,7 +409,7 @@ function renderStage() {
   const st = room.state;
   const step = currentStep();
   const stage = $("#stage");
-  const locked = st.phase !== "question" || now() >= (st.endsAt || 0);
+  const locked = st.phase !== "question" || myLocked || now() >= (st.endsAt || 0);
   const key = `${st.phase}:${st.step}:${locked}`;
   if (key === stageKey) return;
   stageKey = key;
@@ -380,10 +420,22 @@ function renderStage() {
     players: room.players,
     myAnswer,
     locked,
-    submit: (value) => {
-      if (now() >= (st.endsAt || 0)) return;
+    /**
+     * @param value  the answer so far — always saved, so a timeout still
+     *               scores whatever you'd got to
+     * @param done   true when the player is finished with this question
+     */
+    submit: (value, done = false) => {
+      if (locked || now() >= (st.endsAt || 0)) return;
       myAnswer = value;
-      submitAnswer(room.code, st.step, me.id, value).catch(() => toast("Couldn't send that — check signal"));
+      submitAnswer(room.code, st.step, me.id, value)
+        .catch(() => toast("Couldn't send that — check signal"));
+      if (done) {
+        myLocked = true;
+        setLocked(room.code, st.step, me.id, true).catch(() => {});
+        renderStage();   // repaint in the locked state
+        renderLockBar();
+      }
     },
   };
 
@@ -400,9 +452,8 @@ function renderStage() {
   }
 
   if (st.phase === "question") {
-    mount(stage, locked
-      ? waiting("Time's up!", "Locking in everyone's answers…")
-      : mod.render(step, ctx));
+    if (now() >= (st.endsAt || 0)) mount(stage, waiting("Time's up!", "Scoring everyone's answers…"));
+    else mount(stage, mod.render(step, ctx));
     return;
   }
 

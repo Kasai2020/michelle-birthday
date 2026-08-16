@@ -115,6 +115,23 @@ await t("the host CAN read the answer pile (needed to score)", async () => {
   assert.equal(Object.keys(snap.val()).length, 2);
 });
 
+console.log("locked flags");
+await t("a player marks themselves ready; others can see it", async () => {
+  await assertSucceeds(set(at(P1, `rooms/${R}/locked/0/${P1}`), true));
+  const snap = await assertSucceeds(get(at(P2, `rooms/${R}/locked/0`)));
+  assert.equal(snap.val()[P1], true);
+});
+await t("a player CANNOT mark someone else ready", async () => {
+  await assertFails(set(at(P1, `rooms/${R}/locked/0/${P2}`), true));
+});
+await t("only booleans allowed (no smuggling data through)", async () => {
+  await assertFails(set(at(P1, `rooms/${R}/locked/0/${P1}`), "yes"));
+});
+await t("the ready flags leak nothing about the answers", async () => {
+  await assertSucceeds(get(at(P1, `rooms/${R}/locked/0`)));
+  await assertFails(get(at(P1, `rooms/${R}/answers/0`)));
+});
+
 console.log("\nresults + reset");
 await t("host publishes results, players read them", async () => {
   await assertSucceeds(set(at(HOST, `rooms/${R}/results/0`),
@@ -127,7 +144,7 @@ await t("a player cannot forge results", async () => {
 await t("host resets the room for a rematch", async () => {
   await assertSucceeds(update(at(HOST, `rooms/${R}`), {
     [`players/${P1}/score`]: 0, [`players/${P2}/score`]: 0,
-    answers: null, results: null,
+    answers: null, locked: null, results: null,
     state: { phase: "lobby", step: -1, sub: "", startedAt: 0, endsAt: 0 },
   }));
 });
