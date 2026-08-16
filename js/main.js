@@ -16,7 +16,7 @@ import {
 import { el, $, mount, showScreen, toast, waiting, playerChip, clamp, confetti } from "./ui.js";
 import { roundModule } from "./rounds/index.js";
 import { raceView, finalView } from "./views.js";
-import { STEPS, ROUNDS, CELEBRANT } from "../data/content.js";
+import { STEPS, ACTIVE_ROUNDS, CELEBRANT } from "../data/content.js";
 
 const AVATARS = ["🦊", "🐼", "🐸", "🦄", "🐙", "🦖", "🐝", "🦩", "🐳", "🦉", "🐨", "🍕"];
 
@@ -190,10 +190,12 @@ async function quitRoom() {
   clearInterval(tickHandle);
   unsubs.forEach((u) => u());
   unsubs = [];
-  answerUnsub?.(); answerUnsub = null; watchedStep = null;
+  stepUnsubs.forEach((u) => u());
+  stepUnsubs = [];
+  watchedStep = null;
   await leaveRoom(room.code, me.id);
   store.del("mb:session");
-  room = { code: null, hostId: null, players: {}, state: null, results: {} };
+  room = { code: null, hostId: null, players: {}, state: null, results: {}, answers: {}, locked: {} };
   showScreen("screen-home");
 }
 
@@ -440,10 +442,10 @@ function renderStage() {
   };
 
   if (st.phase === "intro") {
-    const round = ROUNDS[step.roundIndex];
+    const round = ACTIVE_ROUNDS[step.roundIndex];
     mount(stage, el("div.intro", {},
       el("div.intro-emoji", {}, step.roundEmoji),
-      el("p.label", {}, `Round ${step.roundIndex + 1} of ${ROUNDS.length}`),
+      el("p.label", {}, `Round ${step.roundIndex + 1} of ${ACTIVE_ROUNDS.length}`),
       el("h2", {}, step.roundName),
       el("p.blurb", {}, step.roundBlurb),
       step.multiplier > 1 && el("div.mult", {}, `${step.multiplier}× POINTS`),

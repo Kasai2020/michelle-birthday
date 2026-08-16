@@ -27,7 +27,7 @@
 import { el, mount } from "../js/ui.js";
 import { roundModule, ROUND_TYPES } from "../js/rounds/index.js";
 import { raceView, finalView } from "../js/views.js";
-import { STEPS } from "../data/content.js";
+import { ALL_STEPS } from "../data/content.js";
 
 const players = {
   me:  { name: "Isaac",   avatar: "🦊", score: 420, online: true },
@@ -43,7 +43,7 @@ const label = (t) => nodes.push(el("div.preview-label", {}, t));
 
 // One question + one reveal for each round type present in the content file.
 for (const type of Object.keys(ROUND_TYPES)) {
-  const step = STEPS.find((s) => s.type === type);
+  const step = ALL_STEPS.find((s) => s.type === type);
   if (!step) continue;
   const mod = roundModule(type);
 

@@ -7,7 +7,7 @@ import * as age from "../js/rounds/age.js";
 import * as photoage from "../js/rounds/photoage.js";
 import * as chronology from "../js/rounds/chronology.js";
 import * as majority from "../js/rounds/majority.js";
-import { STEPS, ROUNDS, SCORING } from "../data/content.js";
+import { STEPS, ALL_STEPS, ROUNDS, ACTIVE_ROUNDS, SCORING } from "../data/content.js";
 
 let pass = 0;
 const test = (name, fn) => {
@@ -44,10 +44,23 @@ test("chronology rounds have at least two items", () => {
     for (const q of r.questions) assert.ok(q.items.length >= 2, `${q.q}: needs 2+ items`);
   }
 });
-test("STEPS flattens every question exactly once", () => {
-  const total = ROUNDS.reduce((n, r) => n + r.questions.length, 0);
+test("STEPS flattens every ACTIVE question exactly once", () => {
+  const total = ACTIVE_ROUNDS.reduce((n, r) => n + r.questions.length, 0);
   assert.equal(STEPS.length, total);
   assert.ok(STEPS[0].isRoundStart);
+});
+test("a parked round is kept in the file but stays out of the game", () => {
+  const parked = ROUNDS.filter((r) => r.enabled === false);
+  for (const r of parked) {
+    assert.ok(!ACTIVE_ROUNDS.includes(r), `${r.name} is disabled but still in play`);
+    assert.ok(ALL_STEPS.some((s) => s.type === r.type), `${r.name} vanished from ALL_STEPS`);
+    assert.ok(!STEPS.some((s) => s.roundName === r.name), `${r.name} leaked into STEPS`);
+  }
+});
+test("round numbering skips parked rounds", () => {
+  const seen = [...new Set(STEPS.map((s) => s.roundIndex))];
+  assert.deepEqual(seen, seen.map((_, i) => i), "roundIndex must be contiguous from 0");
+  assert.ok(seen.every((i) => ACTIVE_ROUNDS[i]), "roundIndex must resolve in ACTIVE_ROUNDS");
 });
 
 console.log("\ntrivia");

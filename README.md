@@ -17,8 +17,10 @@ No server, no build step, no npm install, no cost.
 | 🎈 **Guess the Age** | "How old was she when…?" — slider guess | Closer = more points, exact gets a bonus |
 | 📸 **How Old Is She Here?** | A photo of her, then guess her age in it | Same as above — closest takes it |
 | ⏳ **Chronology** | Tap life events into the order they happened | Partial credit per correctly-ordered pair |
-| 🐝 **Hive Mind** | No right answer — score by matching what most of the room picked | Match the majority |
-| 💥 **Sudden Death** | Trivia at **2× points** so the finale stays open | Everything doubled |
+
+*(Chronology is currently parked — see "Parking a round" below.)*
+| 🐝 **What Would Michelle Do?** | No right answer — score by matching what most of the room picked | Match the majority |
+| 💬 **Michelle Says** | Her own answers, at **2× points**, so the finale stays open | Everything doubled |
 
 Between rounds everyone watches the **🏁 race track** — avatars hop forward by
 score. At the end: a podium, full standings, confetti, and joke superlatives.
@@ -101,6 +103,18 @@ Round types and their fields:
 
 Add, remove, and reorder rounds freely — the game adapts to whatever's there.
 Aim for **15–20 questions total**, which runs about 20–25 minutes.
+
+### Parking a round
+
+Set `enabled: false` on a round to keep it in the file but out of the game:
+
+```js
+{ enabled: false, type: "chronology", name: "The Michelle Timeline", … }
+```
+
+Round numbering closes up around it, the tests still validate its contents,
+and `tests/preview.html` still renders it — so a parked round can't quietly
+rot. Delete the line to bring it back.
 
 ### Adding photos
 

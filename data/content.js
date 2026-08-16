@@ -108,11 +108,18 @@ export const ROUNDS = [
     ],
   },
 
-  // ── Round 4 ────────────────────────────────────────────────────────
-  //  ⚠️ STILL PLACEHOLDER — this is the one round that needs real facts
-  //  from you. Swap in five things that actually happened to Michelle, and
-  //  list them EARLIEST FIRST. The game shuffles them for players.
+  // ── Round 4 — PARKED ───────────────────────────────────────────────
+  //
+  //  🅾️ TURNED OFF. `enabled: false` keeps this round out of the game
+  //     without deleting it — delete that line (or set it to true) and the
+  //     round is back, no other changes needed.
+  //
+  //  It's off because the items below are still placeholder. To switch it
+  //  on: replace them with five things that actually happened to Michelle,
+  //  listed EARLIEST FIRST (the game shuffles them for players), then drop
+  //  the `enabled` line.
   {
+    enabled: false,
     type: "chronology",
     name: "The Michelle Timeline",
     emoji: "⏳",
@@ -255,8 +262,15 @@ const resolveImage = (q) =>
     ? { ...q, image: new URL(q.image, import.meta.url).href }
     : q;
 
+/**
+ * Rounds actually in play. A round with `enabled: false` stays in the file —
+ * readable, editable, and still checked by the tests — but is skipped by the
+ * game entirely, including its round numbering.
+ */
+export const ACTIVE_ROUNDS = ROUNDS.filter((r) => r.enabled !== false);
+
 // ── Flattened step list. Each question is one "step" of the game. ────
-export const STEPS = ROUNDS.flatMap((round, ri) =>
+const flatten = (rounds) => rounds.flatMap((round, ri) =>
   (round.questions || []).map((question, qi) => ({
     type: round.type,
     roundIndex: ri,
@@ -269,5 +283,9 @@ export const STEPS = ROUNDS.flatMap((round, ri) =>
     qNumber: qi + 1,
     qTotal: round.questions.length,
     data: resolveImage(question),
-  }))
-);
+  })));
+
+export const STEPS = flatten(ACTIVE_ROUNDS);
+
+/** Every round including the parked ones — for the tests and the preview page. */
+export const ALL_STEPS = flatten(ROUNDS);
