@@ -16,11 +16,13 @@ No server, no build step, no npm install, no cost.
 | 🧠 **Trivia** | Multiple choice questions about Michelle (photos supported) | Correct answer + speed bonus |
 | 🎈 **Guess the Age** | "How old was she when…?" — slider guess | Closer = more points, exact gets a bonus |
 | 📸 **How Old Is She Here?** | A photo of her, then guess her age in it | Same as above — closest takes it |
-| ⏳ **Chronology** | Tap life events into the order they happened | Partial credit per correctly-ordered pair |
-
-*(Chronology is currently parked — see "Parking a round" below.)*
 | 🐝 **What Would Michelle Do?** | No right answer — score by matching what most of the room picked | Match the majority |
 | 💬 **Michelle Says** | Her own answers, at **2× points**, so the finale stays open | Everything doubled |
+| ⏳ **Chronology** | Tap life events into the order they happened | Partial credit per correctly-ordered pair |
+
+⏳ Chronology is currently **parked** (`enabled: false`) pending real dates —
+see [Parking a round](#parking-a-round). Everything else is live: **22
+questions, roughly 30 minutes.**
 
 Between rounds everyone watches the **🏁 race track** — avatars hop forward by
 score. At the end: a podium, full standings, confetti, and joke superlatives.
