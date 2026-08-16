@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#150f24">
+<title>Michelle's 25th — Birthday Games</title>
+<link rel="preconnect" href="https://www.gstatic.com">
+<link rel="stylesheet" href="./css/styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎂</text></svg>">
+</head>
+<body>
+
+<canvas id="confetti"></canvas>
+
+<div id="app">
+
+  <!-- ── Setup warning (shown when firebase config is missing) ───────── -->
+  <section class="screen" id="screen-setup" hidden>
+    <div class="card">
+      <h1>🔧 Almost there</h1>
+      <p class="muted">This app needs your Firebase Realtime Database keys before it will run.</p>
+      <ol class="steps">
+        <li>Create a free Firebase project</li>
+        <li>Add a Realtime Database + enable Anonymous auth</li>
+        <li>Paste the config into <code>js/config.js</code></li>
+      </ol>
+      <p class="muted">Full walkthrough is in <code>README.md</code>.</p>
+    </div>
+  </section>
+
+  <!-- ── Home ────────────────────────────────────────────────────────── -->
+  <section class="screen" id="screen-home" hidden>
+    <div class="hero">
+      <div class="hero-emoji">🎂</div>
+      <h1 class="title">Michelle's<br><span class="big">25th</span></h1>
+      <p class="subtitle">how well do you actually know her?</p>
+    </div>
+
+    <div class="card">
+      <label class="field">
+        <span>Your name</span>
+        <input id="input-name" type="text" maxlength="14" autocomplete="off"
+               autocapitalize="words" placeholder="e.g. Isaac">
+      </label>
+
+      <div class="avatar-picker" id="avatar-picker"></div>
+
+      <button class="btn btn-primary" id="btn-join-open">Join a game</button>
+      <button class="btn btn-ghost" id="btn-host">Host a game</button>
+      <p class="err" id="home-err" hidden></p>
+    </div>
+  </section>
+
+  <!-- ── Join (enter code) ───────────────────────────────────────────── -->
+  <section class="screen" id="screen-join" hidden>
+    <div class="card">
+      <h2>Enter the room code</h2>
+      <input id="input-code" class="code-input" type="text" maxlength="4"
+             inputmode="text" autocapitalize="characters" autocomplete="off"
+             spellcheck="false" placeholder="ABCD">
+      <button class="btn btn-primary" id="btn-join">Join</button>
+      <button class="btn btn-ghost" id="btn-join-back">Back</button>
+      <p class="err" id="join-err" hidden></p>
+    </div>
+  </section>
+
+  <!-- ── Lobby ───────────────────────────────────────────────────────── -->
+  <section class="screen" id="screen-lobby" hidden>
+    <div class="card room-card">
+      <p class="label">Room code</p>
+      <div class="room-code" id="lobby-code">----</div>
+      <p class="muted small">Everyone opens this page and taps <b>Join a game</b></p>
+    </div>
+
+    <div class="card">
+      <h3><span id="lobby-count">0</span> in the room</h3>
+      <div class="player-grid" id="lobby-players"></div>
+    </div>
+
+    <div class="card host-only" hidden>
+      <button class="btn btn-primary" id="btn-start">Start the game 🎉</button>
+      <p class="muted small center">You're the host — you drive the pacing.</p>
+    </div>
+    <p class="muted center guest-only" id="lobby-wait">Waiting for the host to start…</p>
+    <button class="btn btn-tiny btn-ghost" id="btn-leave">Leave</button>
+  </section>
+
+  <!-- ── Game ────────────────────────────────────────────────────────── -->
+  <section class="screen" id="screen-game" hidden>
+    <header class="game-header">
+      <div class="round-pill" id="round-pill">Round 1</div>
+      <div class="timer" id="timer"><span id="timer-num">20</span></div>
+      <div class="score-pill" id="score-pill">0</div>
+    </header>
+    <div class="timer-bar"><div class="timer-bar-fill" id="timer-fill"></div></div>
+
+    <div id="stage"></div>
+
+    <div class="host-bar host-only" hidden>
+      <button class="btn btn-primary" id="btn-next">Next ▸</button>
+    </div>
+  </section>
+
+  <!-- ── Final ───────────────────────────────────────────────────────── -->
+  <section class="screen" id="screen-final" hidden>
+    <div id="final-stage"></div>
+    <div class="host-bar host-only" hidden>
+      <button class="btn btn-ghost" id="btn-play-again">Back to lobby</button>
+    </div>
+  </section>
+
+</div>
+
+<div id="toast" class="toast" hidden></div>
+
+<script type="module" src="./js/main.js"></script>
+</body>
+</html>

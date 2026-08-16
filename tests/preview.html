@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preview — all screens</title>
+<link rel="stylesheet" href="../css/styles.css">
+<style>
+  .preview-label {
+    margin: 30px 0 10px; padding: 7px 12px; border-radius: 999px;
+    background: #000a; border: 1px dashed var(--line);
+    font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+<div id="app"><div id="out"></div></div>
+<div id="toast" class="toast" hidden></div>
+
+<!--
+  Offline preview of every game screen with fake data — no Firebase needed.
+  Serve the repo and open /tests/preview.html to eyeball styling changes,
+  or check the phone layout, without gathering 10 people first.
+-->
+<script type="module">
+import { el, mount } from "../js/ui.js";
+import { roundModule } from "../js/rounds/index.js";
+import { raceView, finalView } from "../js/views.js";
+import { STEPS } from "../data/content.js";
+
+const players = {
+  me:  { name: "Isaac",   avatar: "🦊", score: 420, online: true },
+  b:   { name: "Sam",     avatar: "🐼", score: 610, online: true },
+  c:   { name: "Priya",   avatar: "🦄", score: 380, online: true },
+  d:   { name: "Jordan",  avatar: "🐙", score: 155, online: false },
+};
+
+const ctx = { myId: "me", players, myAnswer: null, locked: false, submit: () => {} };
+const out = document.getElementById("out");
+const nodes = [];
+const label = (t) => nodes.push(el("div.preview-label", {}, t));
+
+// One question + one reveal for each round type present in the content file.
+for (const type of ["trivia", "age", "chronology", "majority"]) {
+  const step = STEPS.find((s) => s.type === type);
+  if (!step) continue;
+  const mod = roundModule(type);
+
+  label(`${type} · question`);
+  nodes.push(mod.render(step, ctx));
+
+  const answers = { me: { v: fakeAnswer(step), t: 8000 }, b: { v: fakeAnswer(step, 1), t: 12000 },
+                    c: { v: fakeAnswer(step, 2), t: 15000 } };
+  const { result } = mod.score(step, answers, { state: { startedAt: 0, endsAt: 20000 }, players });
+
+  label(`${type} · reveal`);
+  nodes.push(mod.reveal(step, result, ctx));
+}
+
+label("race");
+nodes.push(raceView(players, "me", { me: 120, b: 190 }));
+
+label("final");
+nodes.push(finalView(players, {}, "me"));
+
+mount(out, nodes);
+
+function fakeAnswer(step, offset = 0) {
+  if (step.type === "chronology") return step.data.items.map((_, i) => i).slice(offset);
+  if (step.type === "age") return (step.data.answer ?? 10) + offset;
+  return offset % (step.data.options?.length || 1);
+}
+</script>
+</body>
+</html>
