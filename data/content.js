@@ -79,18 +79,15 @@ export const ROUNDS = [
 
   // ── Round 3 — 📸 PHOTO ROUND ───────────────────────────────────────
   //
-  //  HOW TO ADD YOUR PHOTOS
-  //  ──────────────────────
-  //  1. Put the image files in the `img/` folder of this repo. On github.com
-  //     that's: open the img folder → Add file → Upload files → commit.
-  //  2. Name them simply — no spaces. `age7.jpg`, `prom.jpg`, `beach.png`.
-  //  3. Set `image` below to "../img/<filename>" for each question.
-  //  4. Set `answer` to how old she actually was in that photo.
+  //  ⚠️ THE AGES BELOW ARE ISAAC-CHECK-THESE ESTIMATES, not facts. I read
+  //  them off the photos; correct any that are wrong — it's the `answer`
+  //  number on each line and nothing else needs to change.
   //
-  //  Photos are shown cropped to portrait and capped so the slider stays on
-  //  screen. Resize to roughly 1000px on the long edge first so they load
-  //  fast on party wifi. Until a real file is there you'll see a striped
-  //  "add a photo" panel — that's expected, not a bug.
+  //  The photos are deliberately NOT in age order. A run that climbs
+  //  steadily is guessable from position alone, which kills the round.
+  //
+  //  To add more: drop the file in img/, then copy a line below and point
+  //  `image` at it. See img/README.md.
   {
     type: "photoage",
     name: "How Old Is She Here?",
@@ -98,11 +95,16 @@ export const ROUNDS = [
     blurb: "One photo. One guess. Closest wins.",
     duration: 25,
     questions: [
-      { image: "../img/photo1.jpg", caption: "Exhibit A", answer: 5,  min: 0, max: 25 },
-      { image: "../img/photo2.jpg", caption: "Exhibit B", answer: 12, min: 0, max: 25 },
-      { image: "../img/photo3.jpg", caption: "Exhibit C", answer: 17, min: 0, max: 25 },
-      { image: "../img/photo4.jpg", caption: "Exhibit D", answer: 21, min: 0, max: 25 },
-      // Add as many as you like — each one is its own question.
+      // Sitting up on the counter, holding the TV remote hostage.
+      { image: "../img/photo1-remote.jpg",   caption: "Exhibit A", answer: 1,  min: 0, max: 25 },
+      // Wizarding World, mid-broom-theft.
+      { image: "../img/photo2-broom.jpg",    caption: "Exhibit B", answer: 9,  min: 0, max: 25 },
+      // School uniform, class photo.
+      { image: "../img/photo3-uniform.jpg",  caption: "Exhibit C", answer: 5,  min: 0, max: 25 },
+      // Pigtails, green jacket, holding a beetle with zero fear.
+      { image: "../img/photo4-beetle.jpg",   caption: "Exhibit D", answer: 6,  min: 0, max: 25 },
+      // The red-lit grin.
+      { image: "../img/photo5-redlight.jpg", caption: "Exhibit E", answer: 4,  min: 0, max: 25 },
     ],
   },
 
