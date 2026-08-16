@@ -20,21 +20,13 @@
 // ─────────────────────────────────────────────────────────────────────
 
 export const firebaseConfig = {
-  // ⬇ These three come from Project settings → Your apps → Web app config.
-  apiKey:            "PASTE_API_KEY_HERE",
-  messagingSenderId: "PASTE_SENDER_ID",
-  appId:             "PASTE_APP_ID",
-
-  // ⬇ Already filled in for the "michelle-bday" project.
+  apiKey:            "AIzaSyCUdlipGXoCiVbfO6YL5m7RhBIgIyGeX48",
   authDomain:        "michelle-bday.firebaseapp.com",
-  projectId:         "michelle-bday",
-  storageBucket:     "michelle-bday.appspot.com",
-
-  // ⚠️ Double-check this against the URL shown at the top of your Realtime
-  //    Database page. If you picked a non-US region when creating the DB it
-  //    will instead look like:
-  //      https://michelle-bday-default-rtdb.europe-west1.firebasedatabase.app
   databaseURL:       "https://michelle-bday-default-rtdb.firebaseio.com",
+  projectId:         "michelle-bday",
+  storageBucket:     "michelle-bday.firebasestorage.app",
+  messagingSenderId: "931871676540",
+  appId:             "1:931871676540:web:7bd77e7ca6769c653091f9",
 };
 
 /** True until the placeholders above are replaced. */
