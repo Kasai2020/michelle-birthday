@@ -55,7 +55,7 @@ export const ROUNDS = [
       },
       {
         q: "Her favourite restaurant in the city?",
-        options: ["Kazunori", "Sugarfish", "Din Tai Fung", "Carbone"],
+        options: ["Kazunori", "Sugarfish", "Via Carota", "Carbone"],
         answer: 0,
       },
     ],
@@ -134,25 +134,59 @@ export const ROUNDS = [
 
   // ── Round 5 ────────────────────────────────────────────────────────
   //  No right answer — you score by matching whatever most of the room
-  //  picked. Feel free to swap in names of people who'll actually be there.
+  //  picked. Situations, not people: nobody gets put on the spot, and
+  //  everyone can argue about it afterwards.
   {
     type: "majority",
-    name: "Hive Mind",
+    name: "What Would Michelle Do?",
     emoji: "🐝",
     blurb: "No right answer — score by picking what MOST of the room picks.",
     duration: 20,
     questions: [
       {
-        q: "Who is most likely to be late to Michelle's next party?",
-        options: ["Isaac", "Her sister", "Her best friend", "Literally everyone"],
+        q: "The group chat has 47 unread messages. Michelle…",
+        options: [
+          "Reads every single one",
+          "Scrolls to the bottom and ❤️s the last message",
+          "Mutes it and deals with it later",
+          "Replies with a two-minute voice memo",
+        ],
       },
       {
-        q: "Michelle's most iconic trait?",
-        options: ["The laugh", "The playlists", "The planning spreadsheets", "The snack stash"],
+        q: "She spills coffee on her laptop. AGAIN. First reaction?",
+        options: [
+          "Silent panic, flips it upside down",
+          "Googles whether rice actually works",
+          "Texts Isaac before touching anything",
+          "Wipes it and never speaks of it",
+        ],
       },
       {
-        q: "Best word to describe Michelle at 25?",
-        options: ["Unhinged (affectionate)", "Wise elder", "Chaotic good", "Certified adult"],
+        q: "Flight delayed four hours. Michelle…",
+        options: [
+          "Finds the nearest airport bar",
+          "Re-plans the entire trip on the spot",
+          "Puts on Friends and disappears",
+          "Sleeps through the whole thing",
+        ],
+      },
+      {
+        q: "She walks into a party where she knows exactly one person. She…",
+        options: [
+          "Glues herself to that one person",
+          "Works the room like a professional",
+          "Locates the dog immediately",
+          "Locates the snacks immediately",
+        ],
+      },
+      {
+        q: "Ninety-minute wait at the restaurant. Michelle…",
+        options: [
+          "Puts her name down, waits it out",
+          "Already has a backup booked",
+          "Drinks at the bar until it's ready",
+          "Leaves and finds somewhere else",
+        ],
       },
     ],
   },
