@@ -39,49 +39,41 @@ export const ROUNDS = [
     duration: 20,
     questions: [
       {
-        q: "What is Michelle's go-to coffee order?",
-        options: ["Oat milk latte", "Black drip coffee", "Iced matcha", "Cold brew, no ice"],
-        answer: 0,
+        q: "What sport did Michelle play in high school?",
+        options: ["Soccer", "Field hockey", "Volleyball", "Lacrosse"],
+        answer: 1,
       },
       {
-        q: "Which of these would Michelle absolutely NOT eat?",
-        options: ["Olives", "Blue cheese", "Raw tomato", "Cilantro"],
+        q: "Michelle's favourite colour?",
+        options: ["Sage green", "Lavender", "Pink", "Baby blue"],
+        answer: 2,
+      },
+      {
+        q: "Michelle's most-watched movie?",
+        options: ["The Devil Wears Prada", "Mamma Mia!", "27 Dresses", "The Proposal"],
         answer: 3,
       },
       {
-        q: "What city was Michelle born in?",
-        options: ["San Diego", "Seattle", "Chicago", "Boston"],
-        answer: 1,
-      },
-      {
-        q: "Michelle's most-played song of the year was by…",
-        options: ["Taylor Swift", "SZA", "Fleetwood Mac", "Chappell Roan"],
-        answer: 1,
-      },
-      {
-        // Photo questions: drop any image URL in here (an Imgur link, a
-        // GitHub raw link to a file you commit under /img, anything).
-        q: "Where was this photo taken?",
-        // image: "https://raw.githubusercontent.com/Kasai2020/michelle-birthday/main/img/photo1.jpg",
-        options: ["Portugal", "Mexico City", "Big Sur", "Her parents' backyard"],
-        answer: 2,
+        q: "Her favourite restaurant in the city?",
+        options: ["Kazunori", "Sugarfish", "Din Tai Fung", "Carbone"],
+        answer: 0,
       },
     ],
   },
 
   // ── Round 2 ────────────────────────────────────────────────────────
+  //  Number questions. Closest guess wins, exact gets a bonus — much more
+  //  fun than multiple choice for anything countable.
   {
     type: "age",
-    name: "Guess the Age",
-    emoji: "🎈",
-    blurb: "How old was she when…? Closest guess takes it.",
+    name: "By The Numbers",
+    emoji: "🔢",
+    blurb: "No options. Just guess. Closest takes it.",
     duration: 25,
     questions: [
-      { q: "How old was Michelle when she first travelled abroad?", answer: 9,  min: 0, max: 25, unit: "years old" },
-      { q: "How old was Michelle in this photo?", answer: 16, min: 0, max: 25, unit: "years old" },
-      { q: "How old was Michelle when she got her first job?", answer: 15, min: 0, max: 25, unit: "years old" },
-      // `unit` is free text, so this round works for any number question:
-      { q: "How many countries has Michelle visited?", answer: 12, min: 0, max: 40, unit: "countries" },
+      { q: "How many countries has Michelle been to?", answer: 12, min: 0, max: 40, unit: "countries" },
+      { q: "How many cruises has Michelle been on?", answer: 6, min: 0, max: 20, unit: "cruises" },
+      { q: "How many times has Michelle spilled coffee on her laptop?", answer: 2, min: 0, max: 10, unit: "times" },
     ],
   },
 
@@ -95,10 +87,10 @@ export const ROUNDS = [
   //  3. Set `image` below to "../img/<filename>" for each question.
   //  4. Set `answer` to how old she actually was in that photo.
   //
-  //  Photos are shown at a 4:5 portrait crop, centred. Resize to roughly
-  //  1000px on the long edge first so they load fast on party wifi.
-  //  Until a real file is there you'll see a striped "add a photo" panel —
-  //  that's expected, not a bug.
+  //  Photos are shown cropped to portrait and capped so the slider stays on
+  //  screen. Resize to roughly 1000px on the long edge first so they load
+  //  fast on party wifi. Until a real file is there you'll see a striped
+  //  "add a photo" panel — that's expected, not a bug.
   {
     type: "photoage",
     name: "How Old Is She Here?",
@@ -111,13 +103,13 @@ export const ROUNDS = [
       { image: "../img/photo3.jpg", caption: "Exhibit C", answer: 17, min: 0, max: 25 },
       { image: "../img/photo4.jpg", caption: "Exhibit D", answer: 21, min: 0, max: 25 },
       // Add as many as you like — each one is its own question.
-      // `q` is optional; set it to ask something more specific:
-      //   { image: "../img/wedding.jpg", q: "How old was she at this wedding?",
-      //     caption: "Exhibit E", answer: 19, min: 0, max: 25 },
     ],
   },
 
   // ── Round 4 ────────────────────────────────────────────────────────
+  //  ⚠️ STILL PLACEHOLDER — this is the one round that needs real facts
+  //  from you. Swap in five things that actually happened to Michelle, and
+  //  list them EARLIEST FIRST. The game shuffles them for players.
   {
     type: "chronology",
     name: "The Michelle Timeline",
@@ -127,37 +119,29 @@ export const ROUNDS = [
     questions: [
       {
         q: "Put these Michelle milestones in order, earliest first",
-        // ⚠️ List in the CORRECT order. Players see them shuffled.
         items: [
           "Learned to ride a bike",
-          "Moved out of her parents' house",
-          "Adopted her first pet",
+          "First cruise",
+          "First trip abroad",
           "Met Isaac",
           "Started her current job",
-        ],
-      },
-      {
-        q: "Order these trips, earliest first",
-        items: [
-          "First family road trip",
-          "Study abroad",
-          "The camping trip that went wrong",
-          "Last summer's beach week",
         ],
       },
     ],
   },
 
   // ── Round 5 ────────────────────────────────────────────────────────
+  //  No right answer — you score by matching whatever most of the room
+  //  picked. Feel free to swap in names of people who'll actually be there.
   {
     type: "majority",
     name: "Hive Mind",
     emoji: "🐝",
-    blurb: "No right answer — you score by picking what MOST of the room picks.",
+    blurb: "No right answer — score by picking what MOST of the room picks.",
     duration: 20,
     questions: [
       {
-        q: "Which of us is most likely to be late to Michelle's next party?",
+        q: "Who is most likely to be late to Michelle's next party?",
         options: ["Isaac", "Her sister", "Her best friend", "Literally everyone"],
       },
       {
@@ -172,28 +156,41 @@ export const ROUNDS = [
   },
 
   // ── Round 6 — double points finale ─────────────────────────────────
+  //  Michelle answered these herself, in advance. The room has to guess
+  //  what SHE said — so she should be watching, and ideally reading her own
+  //  answer out loud on the reveal.
   {
     type: "trivia",
-    name: "Sudden Death",
-    emoji: "💥",
-    blurb: "Everything is worth DOUBLE. Anyone can still win.",
-    duration: 15,
+    name: "Michelle Says",
+    emoji: "💬",
+    blurb: "She already answered these. Guess what she said. DOUBLE POINTS.",
+    duration: 20,
     multiplier: 2,
     questions: [
       {
-        q: "What's Michelle's biggest irrational fear?",
-        options: ["Moths", "Deep water", "Escalators", "Uncrustables"],
-        answer: 0,
+        q: "\u201cIf you could visit any place TOMORROW, where would you go?\u201d",
+        options: ["Tokyo", "Hong Kong", "Lisbon", "Seoul"],
+        answer: 1,
       },
       {
-        q: "Finish the sentence Michelle says constantly: \"I'm not mad, I'm just…\"",
-        options: ["…tired", "…hungry", "…disappointed", "…being so normal about it"],
-        answer: 3,
+        q: "\u201cWhat celebrity would you get dinner with?\u201d",
+        options: ["Timothée Chalamet", "Pedro Pascal", "Logan Lerman", "Andrew Garfield"],
+        answer: 2,
       },
       {
-        q: "If Michelle could only keep one, she'd keep…",
-        options: ["Her phone", "Her coffee maker", "Her skincare shelf", "Isaac"],
-        answer: 3,
+        q: "\u201cWhat is your go-to comfort show?\u201d",
+        options: ["The Office", "Friends", "New Girl", "Gilmore Girls"],
+        answer: 1,
+      },
+      {
+        q: "\u201cFavourite sitcom character?\u201d",
+        options: ["Ron Swanson", "Jim Halpert", "Ben Wyatt", "Chandler Bing"],
+        answer: 2,
+      },
+      {
+        q: "\u201cFavourite Harry Potter movie?\u201d",
+        options: ["Goblet of Fire", "Prisoner of Azkaban", "Half-Blood Prince", "Deathly Hallows Pt 2"],
+        answer: 1,
       },
     ],
   },
