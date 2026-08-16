@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 
 import * as trivia from "../js/rounds/trivia.js";
 import * as age from "../js/rounds/age.js";
+import * as photoage from "../js/rounds/photoage.js";
 import * as chronology from "../js/rounds/chronology.js";
 import * as majority from "../js/rounds/majority.js";
 import { STEPS, ROUNDS, SCORING } from "../data/content.js";
@@ -19,7 +20,7 @@ const step = (over = {}) => ({ multiplier: 1, duration: 20, roundIndex: 0, qNumb
 
 console.log("\ncontent");
 test("every round type has an implementation", () => {
-  const known = new Set(["trivia", "age", "chronology", "majority"]);
+  const known = new Set(["trivia", "age", "photoage", "chronology", "majority"]);
   for (const r of ROUNDS) assert.ok(known.has(r.type), `unknown round type: ${r.type}`);
 });
 test("trivia answers point at a real option", () => {
@@ -30,10 +31,11 @@ test("trivia answers point at a real option", () => {
     }
   }
 });
-test("age questions have answers inside their slider range", () => {
-  for (const r of ROUNDS.filter((r) => r.type === "age")) {
+test("age + photo questions have answers inside their slider range", () => {
+  for (const r of ROUNDS.filter((r) => r.type === "age" || r.type === "photoage")) {
     for (const q of r.questions) {
-      assert.ok(q.answer >= (q.min ?? 0) && q.answer <= (q.max ?? 30), `${q.q}: answer outside min/max`);
+      const label = q.q || q.image || q.caption;
+      assert.ok(q.answer >= (q.min ?? 0) && q.answer <= (q.max ?? 30), `${label}: answer outside min/max`);
     }
   }
 });
@@ -121,6 +123,18 @@ test("missing / empty answers don't throw", () => {
   const { deltas } = chronology.score(s, { p: { v: null }, q: { v: [] } });
   assert.equal(deltas.p, 0);
   assert.equal(deltas.q, 0);
+});
+
+console.log("\nphotoage");
+test("photo round reuses the age scoring exactly", () => {
+  const s = step({ data: { image: "x.jpg", answer: 10, min: 0, max: 25 } });
+  const answers = { a: { v: 10 }, b: { v: 13 } };
+  assert.deepEqual(photoage.score(s, answers).deltas, age.score(s, answers).deltas);
+});
+test("every photo question points at an image", () => {
+  for (const r of ROUNDS.filter((r) => r.type === "photoage")) {
+    for (const q of r.questions) assert.ok(q.image, "photoage question needs an image");
+  }
 });
 
 console.log("\nmajority");

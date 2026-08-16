@@ -10,6 +10,8 @@
 //  "trivia"     multiple choice. `answer` is the 0-based index of the
 //               right option. Optional `image` (any URL) shows a photo.
 //  "age"        guess a number. Closest wins most; exact gets a bonus.
+//  "photoage"   the photo round: a picture, then guess how old she was.
+//               Same scoring as "age". See Round 3 for how to add images.
 //  "chronology" put events in order. List `items` in the CORRECT order —
 //               the game shuffles them for players.
 //  "majority"   no right answer: you score by matching what most of the
@@ -83,7 +85,39 @@ export const ROUNDS = [
     ],
   },
 
-  // ── Round 3 ────────────────────────────────────────────────────────
+  // ── Round 3 — 📸 PHOTO ROUND ───────────────────────────────────────
+  //
+  //  HOW TO ADD YOUR PHOTOS
+  //  ──────────────────────
+  //  1. Put the image files in the `img/` folder of this repo. On github.com
+  //     that's: open the img folder → Add file → Upload files → commit.
+  //  2. Name them simply — no spaces. `age7.jpg`, `prom.jpg`, `beach.png`.
+  //  3. Set `image` below to "../img/<filename>" for each question.
+  //  4. Set `answer` to how old she actually was in that photo.
+  //
+  //  Photos are shown at a 4:5 portrait crop, centred. Resize to roughly
+  //  1000px on the long edge first so they load fast on party wifi.
+  //  Until a real file is there you'll see a striped "add a photo" panel —
+  //  that's expected, not a bug.
+  {
+    type: "photoage",
+    name: "How Old Is She Here?",
+    emoji: "📸",
+    blurb: "One photo. One guess. Closest wins.",
+    duration: 25,
+    questions: [
+      { image: "../img/photo1.jpg", caption: "Exhibit A", answer: 5,  min: 0, max: 25 },
+      { image: "../img/photo2.jpg", caption: "Exhibit B", answer: 12, min: 0, max: 25 },
+      { image: "../img/photo3.jpg", caption: "Exhibit C", answer: 17, min: 0, max: 25 },
+      { image: "../img/photo4.jpg", caption: "Exhibit D", answer: 21, min: 0, max: 25 },
+      // Add as many as you like — each one is its own question.
+      // `q` is optional; set it to ask something more specific:
+      //   { image: "../img/wedding.jpg", q: "How old was she at this wedding?",
+      //     caption: "Exhibit E", answer: 19, min: 0, max: 25 },
+    ],
+  },
+
+  // ── Round 4 ────────────────────────────────────────────────────────
   {
     type: "chronology",
     name: "The Michelle Timeline",
@@ -114,7 +148,7 @@ export const ROUNDS = [
     ],
   },
 
-  // ── Round 4 ────────────────────────────────────────────────────────
+  // ── Round 5 ────────────────────────────────────────────────────────
   {
     type: "majority",
     name: "Hive Mind",
@@ -137,7 +171,7 @@ export const ROUNDS = [
     ],
   },
 
-  // ── Round 5 — double points finale ─────────────────────────────────
+  // ── Round 6 — double points finale ─────────────────────────────────
   {
     type: "trivia",
     name: "Sudden Death",
@@ -177,6 +211,17 @@ export const SCORING = {
   perfectBonus: 50, // chronology in perfect order
 };
 
+/**
+ * Resolves a relative `image` against THIS file's location rather than the
+ * page's, so "../img/photo1.jpg" means the repo's img/ folder whether the
+ * game is opened at /index.html or /tests/preview.html. Full http(s) URLs
+ * are left alone.
+ */
+const resolveImage = (q) =>
+  q.image && !/^(https?:)?\/\//i.test(q.image)
+    ? { ...q, image: new URL(q.image, import.meta.url).href }
+    : q;
+
 // ── Flattened step list. Each question is one "step" of the game. ────
 export const STEPS = ROUNDS.flatMap((round, ri) =>
   (round.questions || []).map((question, qi) => ({
@@ -190,6 +235,6 @@ export const STEPS = ROUNDS.flatMap((round, ri) =>
     isRoundStart: qi === 0,
     qNumber: qi + 1,
     qTotal: round.questions.length,
-    data: question,
+    data: resolveImage(question),
   }))
 );

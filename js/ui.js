@@ -77,7 +77,7 @@ export const ordinal = (n) =>
 
 // ── Confetti ─────────────────────────────────────────────────────────
 
-const COLORS = ["#ff5fa2", "#8b5cf6", "#34d3e0", "#a3e635", "#fbbf24", "#ffffff"];
+const COLORS = ["#ff2e74", "#ffe500", "#f7f0e6", "#ff7aa8", "#b3004a"];
 
 export function confetti(count = 140, durationMs = 4200) {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;

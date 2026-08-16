@@ -15,6 +15,7 @@ No server, no build step, no npm install, no cost.
 |---|---|---|
 | 🧠 **Trivia** | Multiple choice questions about Michelle (photos supported) | Correct answer + speed bonus |
 | 🎈 **Guess the Age** | "How old was she when…?" — slider guess | Closer = more points, exact gets a bonus |
+| 📸 **How Old Is She Here?** | A photo of her, then guess her age in it | Same as above — closest takes it |
 | ⏳ **Chronology** | Tap life events into the order they happened | Partial credit per correctly-ordered pair |
 | 🐝 **Hive Mind** | No right answer — score by matching what most of the room picked | Match the majority |
 | 💥 **Sudden Death** | Trivia at **2× points** so the finale stays open | Everything doubled |
@@ -89,6 +90,10 @@ Round types and their fields:
 - **`trivia`** — `q`, `options[]`, `answer` (index), optional `image` (URL)
 - **`age`** — `q`, `answer` (number), `min`, `max`, `unit`, optional `image`.
   Works for any number question ("how many countries…"), not just ages.
+- **`photoage`** — the photo round. `image`, `answer` (her age in it),
+  `caption`, `min`, `max`, and an optional `q` if you want to ask something
+  more specific than "how old is she here?". Scoring matches `age`.
+  See [`img/README.md`](./img/README.md) for how to add the pictures.
 - **`chronology`** — `q`, `items[]` **listed in the correct order**
   (the game shuffles them for players)
 - **`majority`** — `q`, `options[]`. No answer key; you score by matching the
@@ -99,13 +104,17 @@ Aim for **15–20 questions total**, which runs about 20–25 minutes.
 
 ### Adding photos
 
-Commit images to an `img/` folder and reference them by raw URL:
+Upload images to the [`img/`](./img/) folder, then point a question at one:
 
 ```js
-image: "https://raw.githubusercontent.com/Kasai2020/michelle-birthday/main/img/beach.jpg"
+{ image: "../img/photo1.jpg", caption: "Exhibit A", answer: 5, min: 0, max: 25 },
 ```
 
-Resize them to ~1000px wide first so they load fast on party wifi.
+Paths are resolved relative to `data/content.js`, so `../img/…` works whether
+the game is opened at the site root or from `tests/preview.html`. Full
+`https://` URLs work too. Resize to ~1000px on the long edge first so they
+load fast on party wifi — and note that anything in `img/` is served
+publicly. Full guide: [`img/README.md`](./img/README.md).
 
 ---
 
@@ -153,7 +162,7 @@ npx firebase emulators:start --only database --project michelle-bday
 node tests/rules.test.mjs       # in a second terminal
 ```
 
-23 assertions covering who may read the answer pile, who may set scores, and
+27 assertions covering who may read the answer pile, who may set scores, and
 what a guest with devtools open can and can't do.
 
 ---
@@ -166,8 +175,14 @@ rooms/{CODE}
   state                         { phase, step, sub, startedAt, endsAt }
   players/{uid}                 { name, avatar, score, online }
   answers/{step}/{uid}          { v, t }        ← host-readable only
+  locked/{step}/{uid}           true            ← everyone reads: who's ready
   results/{step}                { answer, tally, players:{uid:{pts,ok}} }
 ```
+
+A round ends when every player has *locked in* — an explicit act, not just
+"has something saved" — or when the timer runs out. Partial answers are saved
+continuously so a timeout still scores what you had, but they can't end the
+round early.
 
 `phase` walks through `lobby → intro → question → reveal → race → … → final`.
 Countdowns are computed from Firebase's server clock, so phones with drifting

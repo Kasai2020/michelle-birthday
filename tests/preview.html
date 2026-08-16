@@ -25,7 +25,7 @@
 -->
 <script type="module">
 import { el, mount } from "../js/ui.js";
-import { roundModule } from "../js/rounds/index.js";
+import { roundModule, ROUND_TYPES } from "../js/rounds/index.js";
 import { raceView, finalView } from "../js/views.js";
 import { STEPS } from "../data/content.js";
 
@@ -42,7 +42,7 @@ const nodes = [];
 const label = (t) => nodes.push(el("div.preview-label", {}, t));
 
 // One question + one reveal for each round type present in the content file.
-for (const type of ["trivia", "age", "chronology", "majority"]) {
+for (const type of Object.keys(ROUND_TYPES)) {
   const step = STEPS.find((s) => s.type === type);
   if (!step) continue;
   const mod = roundModule(type);
@@ -68,7 +68,7 @@ mount(out, nodes);
 
 function fakeAnswer(step, offset = 0) {
   if (step.type === "chronology") return step.data.items.map((_, i) => i).slice(offset);
-  if (step.type === "age") return (step.data.answer ?? 10) + offset;
+  if (step.type === "age" || step.type === "photoage") return (step.data.answer ?? 10) + offset;
   return offset % (step.data.options?.length || 1);
 }
 </script>
