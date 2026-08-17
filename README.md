@@ -19,7 +19,7 @@ No server, no build step, no npm install, no cost.
 | 🐝 **What Would Michelle Do?** | No right answer — score by matching what most of the room picked | Match the majority |
 | 💬 **Michelle Says** | Her own answers, at **2× points**, so the finale stays open | Everything doubled |
 | ⏳ **Chronology** | Tap life events into the order they happened | Partial credit per correctly-ordered pair |
-| 🐤 **Flappy Michelle** | Her face, with wings, versus a lot of pipes | Bonus points, ranked by best run |
+| 🐤 **Flappy Michelle** | Her face, with wings. The gap closes in as you score | Bonus points, ranked by best run |
 | 🧠 **Michellorization** | 5×5 grid; memorise where her face is, tap them back | Bonus points, ranked by best run |
 | 🏃 **Michelle Surfers** | Three-lane runner. Dodge everything, it speeds up | Bonus points, ranked by best run |
 
@@ -159,8 +159,14 @@ Design notes worth keeping if you tweak them:
   is exactly the person who needs the round to be fun.
 - **There's always a way out.** A "Sit this one out" / "Lock in" button stays
   on screen even mid-run, so nobody is trapped in a game they don't want.
-- **Flappy is tuned far gentler than the original** — wider gaps, slower
-  pipes, softer gravity. A round where everyone scores 0 isn't a round.
+- **Flappy's gap narrows as you score** (178px → 128px by pipe 8) and the
+  pipes speed up. `GAP_MIN` is set from geometry, not taste: one flap lifts
+  her `FLAP²/(2·GRAVITY)` ≈ 61px, and she has `GAP_MIN − 2R` = 86px to fly
+  through. Let those two numbers converge and it stops being hard and starts
+  being frame-perfect. `tests/flappy-tuning.test.mjs` guards that ratio.
+- **How far the gap centre may move between pipes is capped** (`MAX_SHIFT`).
+  Without it the vertical scatter grows as the gap narrows, so the tightest
+  gaps would also demand the biggest climbs — difficulty compounding twice.
 - **Winning a minigame is worth about one good trivia answer** (see
   `SCORING.arcade`). They're a garnish; the quiz still decides the game.
 - They all share one sprite, `img/face.jpg` — a 256px square crop. Swap that
@@ -212,9 +218,15 @@ open http://localhost:8000
 Two offline helpers, neither of which needs Firebase:
 
 ```bash
-node tests/scoring.test.mjs     # scoring rules + validates data/content.js
+node tests/scoring.test.mjs        # scoring rules + validates data/content.js
+node tests/flappy-tuning.test.mjs  # proves the difficulty ramp stays passable
 open http://localhost:8000/tests/preview.html   # every screen with fake data
 ```
+
+`flappy-tuning` deliberately does **not** try to calibrate difficulty for
+humans — read the comment at the top of it before trusting a bot's score. It
+proves the ramp never becomes impossible; the feel gets tuned by playing it
+in practice mode.
 
 `tests/scoring.test.mjs` is worth running after you edit `content.js` — it
 catches typos like an `answer` index pointing past the end of `options`.

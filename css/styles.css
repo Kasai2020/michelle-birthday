@@ -647,3 +647,7 @@ input[type="range"]::-moz-range-thumb {
 }
 .practice-head { margin-bottom: 12px; }
 .practice-head .btn { margin-top: 0; }
+
+/* Flappy: the score chip flashes pink while the gap is still tightening,
+   then settles on acid yellow once the ramp has bottomed out. */
+.mg-hud.tightening { background: var(--pink); color: var(--bone); }
