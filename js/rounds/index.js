@@ -7,7 +7,8 @@ import * as age        from "./age.js";
 import * as photoage   from "./photoage.js";
 import * as chronology from "./chronology.js";
 import * as majority   from "./majority.js";
+import * as arcade     from "./arcade.js";
 
-export const ROUND_TYPES = { trivia, age, photoage, chronology, majority };
+export const ROUND_TYPES = { trivia, age, photoage, chronology, majority, arcade };
 
 export const roundModule = (type) => ROUND_TYPES[type] || trivia;

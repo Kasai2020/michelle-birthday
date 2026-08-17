@@ -7,6 +7,8 @@ import * as age from "../js/rounds/age.js";
 import * as photoage from "../js/rounds/photoage.js";
 import * as chronology from "../js/rounds/chronology.js";
 import * as majority from "../js/rounds/majority.js";
+import * as arcade from "../js/rounds/arcade.js";
+import { ROUND_TYPES } from "../js/rounds/index.js";
 import { STEPS, ALL_STEPS, ROUNDS, ACTIVE_ROUNDS, SCORING } from "../data/content.js";
 
 let pass = 0;
@@ -20,8 +22,16 @@ const step = (over = {}) => ({ multiplier: 1, duration: 20, roundIndex: 0, qNumb
 
 console.log("\ncontent");
 test("every round type has an implementation", () => {
-  const known = new Set(["trivia", "age", "photoage", "chronology", "majority"]);
-  for (const r of ROUNDS) assert.ok(known.has(r.type), `unknown round type: ${r.type}`);
+  // Derived from the registry, not a hand-kept list, so adding a round type
+  // can't leave this passing by accident.
+  for (const r of ROUNDS) assert.ok(ROUND_TYPES[r.type], `unknown round type: ${r.type}`);
+});
+test("every registered round type implements the full contract", () => {
+  for (const [name, mod] of Object.entries(ROUND_TYPES)) {
+    for (const fn of ["render", "score", "reveal"]) {
+      assert.equal(typeof mod[fn], "function", `${name}.${fn} is missing`);
+    }
+  }
 });
 test("trivia answers point at a real option", () => {
   for (const r of ROUNDS.filter((r) => r.type === "trivia")) {
@@ -148,6 +158,38 @@ test("every photo question points at an image", () => {
   for (const r of ROUNDS.filter((r) => r.type === "photoage")) {
     for (const q of r.questions) assert.ok(q.image, "photoage question needs an image");
   }
+});
+
+console.log("\narcade");
+test("minigame scores are ranked, and a zero run pays nothing", () => {
+  const s = step({ data: { game: "flappy" } });
+  const { deltas, result } = arcade.score(s, {
+    win: { v: 14 }, second: { v: 9 }, third: { v: 4 }, fourth: { v: 1 }, dnf: { v: 0 },
+  });
+  assert.equal(deltas.win, SCORING.arcade.first);
+  assert.equal(deltas.second, SCORING.arcade.second);
+  assert.equal(deltas.third, SCORING.arcade.third);
+  assert.equal(deltas.fourth, SCORING.arcade.played);
+  assert.equal(deltas.dnf, 0, "not playing must not pay");
+  assert.ok(result.players.win.ok);
+});
+test("tied minigame scores tie, rather than splitting on submit order", () => {
+  const s = step({ data: { game: "surfers" } });
+  const { deltas } = arcade.score(s, { a: { v: 12 }, b: { v: 12 }, c: { v: 3 } });
+  assert.equal(deltas.a, deltas.b, "equal runs must earn equal points");
+  assert.equal(deltas.a, SCORING.arcade.first);
+});
+test("a minigame can never outweigh the quiz", () => {
+  const s = step({ data: { game: "flappy" } });
+  const win = arcade.score(s, { p: { v: 99 } }).deltas.p;
+  assert.ok(win <= SCORING.base + SCORING.speedBonus,
+    "winning a minigame should be worth about one good trivia answer");
+});
+test("missing / malformed runs don't throw", () => {
+  const s = step({ data: { game: "memory" } });
+  const { deltas } = arcade.score(s, { a: { v: null }, b: {} });
+  assert.equal(deltas.a, 0);
+  assert.equal(deltas.b, 0);
 });
 
 console.log("\nmajority");

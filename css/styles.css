@@ -259,6 +259,9 @@ input:focus { outline: none; border-color: var(--pink); box-shadow: inset 0 0 0 
 .lockbar .lb-dot.ready { opacity: 1; filter: none; background: var(--pink); }
 
 .host-bar { position: sticky; bottom: 10px; margin-top: 18px; }
+/* The bar pins itself over whatever is above it in flow, so the host's
+   screen reserves its height. Guests get no bar and no dead space. */
+body.is-host #stage { padding-bottom: 76px; }
 
 /* ── Round intro ────────────────────────────────────────────────────── */
 
@@ -525,4 +528,97 @@ input[type="range"]::-moz-range-thumb {
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001s !important; transition-duration: .001s !important; }
+}
+
+/* ── Arcade minigames ───────────────────────────────────────────────── */
+
+.arcade-head { margin-bottom: 12px; }
+.arcade-head .label { margin-bottom: 4px; }
+
+.arcade-arena {
+  position: relative;
+  border: var(--bd);
+  box-shadow: var(--stamp);
+  background: var(--ink);
+  overflow: hidden;
+  touch-action: manipulation;   /* kill the double-tap zoom while playing */
+  user-select: none;
+}
+.arcade-footer { margin-top: 16px; }
+
+.mg-stage { position: relative; }
+.mg-canvas { display: block; width: 100%; touch-action: none; }
+
+.mg-hud {
+  position: absolute; top: 8px; left: 8px; z-index: 3;
+  padding: 4px 10px;
+  background: var(--acid); color: var(--ink);
+  border: 2px solid var(--ink);
+  font-family: var(--mono); font-size: 15px; font-weight: 700;
+}
+
+.mg-countdown {
+  display: grid; place-items: center; gap: 6px;
+  height: min(40vh, 360px);
+  background: var(--ink);
+}
+.mg-count-num {
+  font-size: 90px; font-weight: 900; line-height: 1;
+  color: var(--pink); text-shadow: 5px 5px 0 var(--acid);
+  animation: countpop .3s steps(3) both;
+}
+@keyframes countpop { from { transform: scale(1.5); opacity: .2; } }
+
+.mg-tapzones {
+  position: absolute; inset: auto 0 0 0; z-index: 2;
+  display: grid; grid-template-columns: 1fr 1fr;
+  pointer-events: none;
+}
+.mg-tapzones .mg-tap {
+  padding: 6px 0; text-align: center;
+  font-size: 15px; color: var(--bone); opacity: .3;
+  border-top: 2px solid var(--ink-3);
+}
+.mg-tapzones .mg-tap + .mg-tap { border-left: 2px solid var(--ink-3); }
+
+/* Michellorization grid */
+.mg-status {
+  padding: 9px 12px; text-align: center;
+  background: var(--ink-2); border-bottom: 2px solid var(--ink-3);
+  font-family: var(--mono); font-size: 12px; font-weight: 700;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--pink);
+}
+.mg-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 5px; padding: 8px;
+}
+.mg-card {
+  aspect-ratio: 1; padding: 0; overflow: hidden;
+  background: var(--ink-2); border: 2px solid var(--ink-3);
+  cursor: pointer; transition: transform .08s steps(2);
+}
+.mg-card:active:not(:disabled) { transform: scale(.94); }
+.mg-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.mg-card.face { border-color: var(--acid); }
+.mg-card.wrong { border-color: var(--red); background: var(--red); }
+.mg-card.missed { border-color: var(--pink); opacity: .55; }
+
+/* Between-run panels */
+.mg-result {
+  padding: 9px; margin-bottom: 10px; text-align: center;
+  background: var(--ink-2); border: 2px solid var(--ink-3);
+}
+.mg-result.best { border-color: var(--acid); }
+.mg-result-score {
+  font-family: var(--mono); font-size: 26px; font-weight: 700; color: var(--acid);
+}
+/* Side by side so the whole round clears the pinned host bar without
+   anyone having to scroll mid-game. */
+.arcade-actions { display: flex; gap: 8px; }
+.arcade-actions .btn { margin-top: 0; flex: 1; font-size: 15px; padding: 14px 8px; }
+.mg-done { padding: 40px 16px; text-align: center; border: 2px dashed var(--ink-3); }
+.mg-done-emoji { font-size: 50px; }
+.mg-best {
+  font-family: var(--mono); font-size: 34px; font-weight: 700;
+  color: var(--pink); margin: 4px 0 8px;
 }

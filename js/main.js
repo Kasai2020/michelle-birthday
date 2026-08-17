@@ -356,6 +356,7 @@ function render() {
   if (!room.code) return;
   const st = room.state;
 
+  document.body.classList.toggle("is-host", isHost);
   for (const n of document.querySelectorAll(".host-only")) n.hidden = !isHost;
   for (const n of document.querySelectorAll(".guest-only")) n.hidden = isHost;
 
@@ -416,7 +417,9 @@ function renderStage() {
   if (key === stageKey) return;
   stageKey = key;
 
-  const mod = roundModule(step?.type);
+  if (!step) { mount(stage, waiting("Hold on…", "Waiting for the host")); return; }
+
+  const mod = roundModule(step.type);
   const ctx = {
     myId: me.id,
     players: room.players,

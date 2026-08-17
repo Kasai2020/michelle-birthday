@@ -19,6 +19,12 @@ No server, no build step, no npm install, no cost.
 | 🐝 **What Would Michelle Do?** | No right answer — score by matching what most of the room picked | Match the majority |
 | 💬 **Michelle Says** | Her own answers, at **2× points**, so the finale stays open | Everything doubled |
 | ⏳ **Chronology** | Tap life events into the order they happened | Partial credit per correctly-ordered pair |
+| 🐤 **Flappy Michelle** | Her face, with wings, versus a lot of pipes | Bonus points, ranked by best run |
+| 🧠 **Michellorization** | 5×5 grid; memorise where her face is, tap them back | Bonus points, ranked by best run |
+| 🏃 **Michelle Surfers** | Three-lane runner. Dodge everything, it speeds up | Bonus points, ranked by best run |
+
+The three 🕹️ arcade rounds are interleaved between the quiz rounds, so the
+room gets a physical break between thinking rounds.
 
 ⏳ Chronology is currently **parked** (`enabled: false`) pending real dates —
 see [Parking a round](#parking-a-round). Everything else is live: **22
@@ -102,6 +108,8 @@ Round types and their fields:
   (the game shuffles them for players)
 - **`majority`** — `q`, `options[]`. No answer key; you score by matching the
   crowd.
+- **`arcade`** — a real minigame. Only field is `game`: `"flappy"`,
+  `"memory"` or `"surfers"`. Nothing to write. See below.
 
 Add, remove, and reorder rounds freely — the game adapts to whatever's there.
 Aim for **15–20 questions total**, which runs about 20–25 minutes.
@@ -117,6 +125,28 @@ Set `enabled: false` on a round to keep it in the file but out of the game:
 Round numbering closes up around it, the tests still validate its contents,
 and `tests/preview.html` still renders it — so a parked round can't quietly
 rot. Delete the line to bring it back.
+
+### The arcade rounds
+
+The three minigames live in [`js/minigames/`](./js/minigames/). Each one is a
+single file exporting `mount(container, { face, onEnd })`, plus a `label()` for
+formatting its score and an `instructions` string — the shared countdown,
+retries, scoring and lock-in button all live in
+[`js/rounds/arcade.js`](./js/rounds/arcade.js), so a new minigame is one file
+and one line in the registry.
+
+Design notes worth keeping if you tweak them:
+
+- **Retries are unlimited** until the round timer ends, and your *best* run
+  counts. One-shot runs punish whoever dies in two seconds, which at a party
+  is exactly the person who needs the round to be fun.
+- **There's always a way out.** A "Sit this one out" / "Lock in" button stays
+  on screen even mid-run, so nobody is trapped in a game they don't want.
+- **Flappy is tuned far gentler than the original** — wider gaps, slower
+  pipes, softer gravity. A round where everyone scores 0 isn't a round.
+- **Winning a minigame is worth about one good trivia answer** (see
+  `SCORING.arcade`). They're a garnish; the quiz still decides the game.
+- They all use `img/face.jpg`, a square crop generated from one of the photos.
 
 ### Adding photos
 

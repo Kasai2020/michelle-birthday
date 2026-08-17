@@ -16,6 +16,9 @@
 //               the game shuffles them for players.
 //  "majority"   no right answer: you score by matching what most of the
 //               group picked. Great for chaos.
+//  "arcade"     a real minigame — see js/minigames/. `game` picks which one
+//               ("flappy" | "memory" | "surfers"). Best score wins bonus
+//               points. No content to write; just drop the round in.
 //
 //  Per-round knobs: `duration` (seconds), `multiplier` (point multiplier,
 //  use 2 for a dramatic final round), `emoji`, `blurb`.
@@ -61,6 +64,17 @@ export const ROUNDS = [
     ],
   },
 
+
+  // ── 🕹️ MINIGAME ───────────────────────────────────────────────────
+  {
+    type: "arcade",
+    name: "Flappy Michelle",
+    emoji: "🐤",
+    blurb: "Her face. Wings. Pipes. Good luck.",
+    duration: 75,
+    questions: [{ game: "flappy", title: "Flappy Michelle" }],
+  },
+
   // ── Round 2 ────────────────────────────────────────────────────────
   //  Number questions. Closest guess wins, exact gets a bonus — much more
   //  fun than multiple choice for anything countable.
@@ -75,6 +89,17 @@ export const ROUNDS = [
       { q: "How many cruises has Michelle been on?", answer: 6, min: 0, max: 20, unit: "cruises" },
       { q: "How many times has Michelle spilled coffee on her laptop?", answer: 2, min: 0, max: 10, unit: "times" },
     ],
+  },
+
+
+  // ── 🕹️ MINIGAME ───────────────────────────────────────────────────
+  {
+    type: "arcade",
+    name: "Michellorization",
+    emoji: "🧠",
+    blurb: "Remember where she was. Tap them all back.",
+    duration: 70,
+    questions: [{ game: "memory", title: "Michellorization" }],
   },
 
   // ── Round 3 — 📸 PHOTO ROUND ───────────────────────────────────────
@@ -137,6 +162,17 @@ export const ROUNDS = [
         ],
       },
     ],
+  },
+
+
+  // ── 🕹️ MINIGAME ───────────────────────────────────────────────────
+  {
+    type: "arcade",
+    name: "Michelle Surfers",
+    emoji: "🏃",
+    blurb: "Three lanes. Dodge everything. It gets faster.",
+    duration: 75,
+    questions: [{ game: "surfers", title: "Michelle Surfers" }],
   },
 
   // ── Round 5 ────────────────────────────────────────────────────────
@@ -249,6 +285,9 @@ export const SCORING = {
   exactBonus: 40,   // "guess the age" nailed it
   closestBonus: 30, // "guess the age" closest in the room
   perfectBonus: 50, // chronology in perfect order
+  // Arcade rounds are a garnish, not the main course — winning a minigame
+  // is worth about one good trivia answer, never enough to buy the game.
+  arcade: { first: 150, second: 100, third: 70, played: 35 },
 };
 
 /**
