@@ -63,7 +63,7 @@ export const ROUNDS = [
         // Stage names in brackets so the non-ARMY half of the room has a
         // chance of following along.
         q: "Michelle's BTS bias?",
-        options: ["Jimin", "Yoongi (Suga)", "Taehyung (V)", "Namjoon (RM)"],
+        options: ["Jimin", "Yoongi (Suga)", "Taehyung (V)", "Jungkook"],
         answer: 1,
       },
       {
