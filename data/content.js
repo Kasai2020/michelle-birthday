@@ -80,7 +80,7 @@ export const ROUNDS = [
     name: "Flappy Michelle",
     emoji: "🐤",
     blurb: "Her face. Wings. Pipes. Good luck.",
-    duration: 75,
+    duration: 60,
     questions: [{ game: "flappy", title: "Flappy Michelle" }],
   },
 
@@ -107,7 +107,7 @@ export const ROUNDS = [
     name: "Michellorization",
     emoji: "🧠",
     blurb: "Remember where she was. Tap them all back.",
-    duration: 70,
+    duration: 60,
     questions: [{ game: "memory", title: "Michellorization" }],
   },
 
@@ -180,7 +180,7 @@ export const ROUNDS = [
     name: "Michelle Surfers",
     emoji: "🏃",
     blurb: "Three lanes. Dodge everything. It gets faster.",
-    duration: 75,
+    duration: 60,
     questions: [{ game: "surfers", title: "Michelle Surfers" }],
   },
 

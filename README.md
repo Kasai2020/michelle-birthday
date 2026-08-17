@@ -160,7 +160,7 @@ Design notes worth keeping if you tweak them:
 - **There's always a way out.** A "Sit this one out" / "Lock in" button stays
   on screen even mid-run, so nobody is trapped in a game they don't want.
 - **Flappy's gap narrows as you score** (155px → 116px by pipe 5) and the
-  pipes keep speeding up long after (152 → 310 px/s), which is what carries
+  pipes keep speeding up long after (170 → 320 px/s), which is what carries
   the difficulty once the gap has bottomed out. `GAP_MIN` is set from
   geometry, not taste: one flap lifts her `FLAP²/(2·GRAVITY)` ≈ 53px, and
   she has `GAP_MIN − 2R` = 74px to fly through. Let those two numbers
@@ -168,9 +168,13 @@ Design notes worth keeping if you tweak them:
   `tests/flappy-tuning.test.mjs` guards that ratio — **to make the floor
   tighter you have to soften the flap first**, or the test will (correctly)
   fail.
-- **How far the gap centre may move between pipes is capped** (`MAX_SHIFT`).
-  Without it the vertical scatter grows as the gap narrows, so the tightest
-  gaps would also demand the biggest climbs — difficulty compounding twice.
+- **How far the gap centre may move between pipes is capped** (`MAX_SHIFT`,
+  currently 86px). Without it the vertical scatter grows as the gap narrows,
+  so the tightest gaps would also demand the biggest climbs. It has an upper
+  bound too: at top speed there are only `SPACING / SPEED_MAX` seconds
+  between pipes, so raising `MAX_SHIFT` and `SPEED_MAX` together eventually
+  makes pipes physically unreachable rather than hard. The tuning test
+  computes that ceiling and fails if the pair crosses it.
 - **Winning a minigame is worth about one good trivia answer** (see
   `SCORING.arcade`). They're a garnish; the quiz still decides the game.
 - They all share one sprite, `img/face.jpg` — a 256px square crop. Swap that

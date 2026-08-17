@@ -31,14 +31,17 @@ const GAP_START  = 155;   // tight from the first pipe
 const GAP_MIN    = 116;   // 74px of room vs a 53px flap — about as low as
                           // this flap can go before it turns frame-perfect
 const GAP_STEP   = 9;     // floor lands at pipe 5, so the ramp is short
-const SPEED_START = 152;  // px/s — and the speed keeps climbing long after
-const SPEED_STEP  = 6;    // the gap has bottomed out, which is what carries
-const SPEED_MAX   = 310;  // the difficulty for a good player
+const SPEED_START = 170;  // px/s — and the speed keeps climbing long after
+const SPEED_STEP  = 9;    // the gap has bottomed out, which is what carries
+const SPEED_MAX   = 320;  // the difficulty for a good player
 
-// How far the gap centre may move between consecutive pipes. Without this the
-// vertical scatter grows as the gap narrows — the tightest gaps would also
-// demand the biggest climbs, compounding difficulty twice over.
-const MAX_SHIFT  = 74;
+// How far the gap centre may move between consecutive pipes. The cap exists
+// so the tightest gaps don't ALSO demand the biggest climbs, but it has an
+// upper bound of its own: at top speed there are only SPACING/SPEED_MAX
+// seconds between pipes, and she can only climb so far in that time. Push
+// this past what's climbable and pipes become unreachable rather than hard —
+// the tuning test computes the ceiling and fails if this crosses it.
+const MAX_SHIFT  = 86;
 
 export const gapFor   = (n) => Math.max(GAP_MIN, GAP_START - n * GAP_STEP);
 export const speedFor = (n) => Math.min(SPEED_MAX, SPEED_START + n * SPEED_STEP);

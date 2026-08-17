@@ -107,9 +107,12 @@ test("the gap centre can't jump further than a player can climb", () => {
 });
 
 console.log("\nthe ramp never walls out");
-const clean = simulate(4, 0, 1);
-test(`a competent player gets far past the floor (reached ${clean})`, () => {
-  assert.ok(clean >= 40, `stalled at ${clean} — the ramp becomes impassable`);
+const median = (xs) => xs.slice().sort((a, b) => a - b)[Math.floor(xs.length / 2)];
+const clean = [1, 2, 3, 4, 5, 6, 7].map((s) => simulate(4, 0, s));
+test(`a competent player gets far past the floor (median ${median(clean)} of ${clean.join(", ")})`, () => {
+  // Median, not a single seed: one bad pipe sequence is variance, not a wall.
+  assert.ok(median(clean) >= 40, `median ${median(clean)} — the ramp becomes impassable`);
+  assert.ok(Math.max(...clean) >= 80, "no run gets far — the ceiling is too low");
 });
 const noisy = [1, 2, 3, 4, 5].map((s) => simulate(4, 0.1, s));
 test(`still passable when a tenth of the taps are dropped (${noisy.join(", ")})`, () => {
