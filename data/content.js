@@ -42,16 +42,6 @@ export const ROUNDS = [
     duration: 20,
     questions: [
       {
-        q: "What sport did Michelle play in high school?",
-        options: ["Soccer", "Field hockey", "Volleyball", "Lacrosse"],
-        answer: 1,
-      },
-      {
-        q: "Michelle's favourite colour?",
-        options: ["Sage green", "Lavender", "Pink", "Baby blue"],
-        answer: 2,
-      },
-      {
         q: "Michelle's most-watched movie?",
         options: ["The Devil Wears Prada", "Mamma Mia!", "27 Dresses", "The Proposal"],
         answer: 3,
@@ -61,9 +51,26 @@ export const ROUNDS = [
         options: ["Kazunori", "Sugarfish", "Via Carota", "Carbone"],
         answer: 0,
       },
+      {
+        q: "Michelle's favourite 5SOS member?",
+        // The whole band, so nobody can rule one out for not existing.
+        options: ["Ashton Irwin", "Calum Hood", "Luke Hemmings", "Michael Clifford"],
+        answer: 2,
+      },
+      {
+        // Stage names in brackets so the non-ARMY half of the room has a
+        // chance of following along.
+        q: "Michelle's BTS bias?",
+        options: ["Jimin", "Yoongi (Suga)", "Taehyung (V)", "Namjoon (RM)"],
+        answer: 1,
+      },
+      {
+        q: "Michelle's most-played Taylor Swift song?",
+        options: ["Champagne Problems", "Death by a Thousand Cuts", "august", "All Too Well"],
+        answer: 1,
+      },
     ],
   },
-
 
   // ── 🕹️ MINIGAME ───────────────────────────────────────────────────
   {

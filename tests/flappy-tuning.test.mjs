@@ -85,8 +85,10 @@ test("the gap narrows as you score, then floors", () => {
   assert.equal(gapFor(100), GAP_MIN, "must floor rather than invert");
   assert.equal(gapFor(1e6), GAP_MIN);
 });
-test("it starts forgiving — a beginner gets a couple of easy pipes", () => {
-  assert.ok(GAP_START - 2 * R > riseFor * 2, "the opening gap should be roomy");
+test("the opening gap is tight but flyable", () => {
+  const band = GAP_START - 2 * R;
+  assert.ok(band > riseFor * 1.6, `opening band ${band}px vs a ${Math.round(riseFor)}px flap`);
+  assert.ok(band < riseFor * 2.6, "opening gap is too generous — this is meant to bite early");
 });
 test(`the floor respects the flap: ${Math.round(GAP_MIN - 2 * R)}px of room for a ${Math.round(riseFor)}px flap`, () => {
   const band = GAP_MIN - 2 * R;

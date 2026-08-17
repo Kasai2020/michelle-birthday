@@ -10,8 +10,11 @@
 import { el } from "../ui.js";
 import { makeCanvas, loop, drawFace, hud } from "./engine.js";
 
-const GRAVITY    = 1250;  // px/s²  — unchanged, the flap should feel the same
-const FLAP       = -390;  // px/s impulse
+const GRAVITY    = 1300;  // px/s²
+const FLAP       = -370;  // px/s impulse. Softened ~5% from the first cut,
+                          // barely perceptible but it shrinks the flap arc
+                          // and so buys ~12px of gap floor to spend on
+                          // difficulty. See GAP_MIN.
 const R          = 21;    // her radius
 const PIPE_W     = 58;
 const SPACING    = 212;   // px between pipes — distance-based, so the ramp in
@@ -24,12 +27,13 @@ const SPACING    = 212;   // px between pipes — distance-based, so the ramp in
 // FLAP²/(2·GRAVITY) ≈ 61px, and the space she has to fly through is
 // GAP_MIN − 2R. Let those get close and the game stops being hard and starts
 // being frame-perfect, which is a different (worse) game.
-const GAP_START  = 178;
-const GAP_MIN    = 128;   // 86px of clearance vs a 61px flap — tight, fair
-const GAP_STEP   = 7;     // px narrower per pipe, so the floor lands at ~8
-const SPEED_START = 138;  // px/s
-const SPEED_STEP  = 4.5;
-const SPEED_MAX   = 250;
+const GAP_START  = 155;   // tight from the first pipe
+const GAP_MIN    = 116;   // 74px of room vs a 53px flap — about as low as
+                          // this flap can go before it turns frame-perfect
+const GAP_STEP   = 9;     // floor lands at pipe 5, so the ramp is short
+const SPEED_START = 152;  // px/s — and the speed keeps climbing long after
+const SPEED_STEP  = 6;    // the gap has bottomed out, which is what carries
+const SPEED_MAX   = 310;  // the difficulty for a good player
 
 // How far the gap centre may move between consecutive pipes. Without this the
 // vertical scatter grows as the gap narrows — the tightest gaps would also
