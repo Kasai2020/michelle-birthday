@@ -16,6 +16,7 @@ import {
 import { el, $, mount, showScreen, toast, waiting, playerChip, clamp, confetti } from "./ui.js";
 import { roundModule } from "./rounds/index.js";
 import { raceView, finalView } from "./views.js";
+import { isPracticeCode, openPractice } from "./practice.js";
 import { STEPS, ACTIVE_ROUNDS, CELEBRANT } from "../data/content.js";
 
 const AVATARS = ["🦊", "🐼", "🐸", "🦄", "🐙", "🦖", "🐝", "🦩", "🐳", "🦉", "🐨", "🍕"];
@@ -145,6 +146,16 @@ function wireButtons() {
   $("#btn-join").onclick = async () => {
     const code = codeInput.value.trim().toUpperCase();
     const err = $("#join-err");
+
+    // Secret practice code — handled before any room lookup, so it works
+    // with no host, no room and nothing written to the database.
+    if (isPracticeCode(code)) {
+      codeInput.value = "";
+      err.hidden = true;
+      openPractice();
+      return;
+    }
+
     if (code.length !== 4) { err.textContent = "Codes are 4 letters."; err.hidden = false; return; }
     $("#btn-join").disabled = true;
     try {

@@ -622,3 +622,28 @@ input[type="range"]::-moz-range-thumb {
   font-family: var(--mono); font-size: 34px; font-weight: 700;
   color: var(--pink); margin: 4px 0 8px;
 }
+
+/* ── Practice mode ──────────────────────────────────────────────────── */
+
+.practice-list { display: grid; gap: 8px; margin-top: 14px; }
+.practice-item {
+  display: flex; align-items: center; gap: 12px; width: 100%;
+  padding: 12px; text-align: left;
+  background: var(--ink); color: var(--bone);
+  border: 2px solid var(--ink-3);
+  font-family: var(--font); cursor: pointer;
+  transition: transform .06s steps(2), border-color .1s;
+}
+.practice-item:active { transform: translate(3px, 3px); }
+.practice-item:hover { border-color: var(--pink); }
+.practice-item .pi-emoji { font-size: 30px; line-height: 1; }
+.practice-item .pi-text { display: grid; gap: 2px; }
+.practice-item .pi-name { font-size: 16px; font-weight: 900; text-transform: uppercase; }
+.practice-item .pi-hint { font-size: 12px; color: var(--bone-dim); }
+.practice-item .pi-best {
+  margin-left: auto; padding: 3px 7px;
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  color: var(--ink); background: var(--acid); border: 2px solid var(--ink);
+}
+.practice-head { margin-bottom: 12px; }
+.practice-head .btn { margin-top: 0; }

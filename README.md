@@ -126,6 +126,23 @@ Round numbering closes up around it, the tests still validate its contents,
 and `tests/preview.html` still renders it — so a parked round can't quietly
 rot. Delete the line to bring it back.
 
+### 🎮 Practice mode (secret code)
+
+To play the minigames solo — no room, no host, nothing written to the
+database — go to **Join a game** and enter:
+
+```
+MINI        (or SOLO)
+```
+
+You get a menu of the three minigames, unlimited replays, and a per-game best
+score kept in `localStorage` so you can tell whether a tuning tweak actually
+helped. Use it to check how Flappy feels under a real thumb before the party.
+
+Both codes are unreachable by the room-code generator, which draws from an
+alphabet with **I** and **O** removed (they read as 1 and 0) — so a real room
+can never be called `MINI` or `SOLO`, and this can't shadow someone's game.
+
 ### The arcade rounds
 
 The three minigames live in [`js/minigames/`](./js/minigames/). Each one is a
