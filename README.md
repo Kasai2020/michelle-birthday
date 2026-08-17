@@ -146,7 +146,9 @@ Design notes worth keeping if you tweak them:
   pipes, softer gravity. A round where everyone scores 0 isn't a round.
 - **Winning a minigame is worth about one good trivia answer** (see
   `SCORING.arcade`). They're a garnish; the quiz still decides the game.
-- They all use `img/face.jpg`, a square crop generated from one of the photos.
+- They all share one sprite, `img/face.jpg` — a 256px square crop. Swap that
+  file and every minigame changes at once. Crop it so her hair is included;
+  a tight face crop stops reading at the ~30px the surfers player is drawn at.
 
 ### Adding photos
 
