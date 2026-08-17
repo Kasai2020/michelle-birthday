@@ -277,7 +277,7 @@ export const ROUNDS = [
       },
       {
         q: "\u201cFavourite Harry Potter character?\u201d",
-        options: ["Remus Lupin", "Luna Lovegood", "Sirius Black", "Severus Snape"],
+        options: ["Dobby", "Luna Lovegood", "Sirius Black", "Severus Snape"],
         answer: 2,
       },
     ],
