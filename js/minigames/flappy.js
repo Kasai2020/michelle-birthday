@@ -27,13 +27,13 @@ const SPACING    = 212;   // px between pipes — distance-based, so the ramp in
 // FLAP²/(2·GRAVITY) ≈ 61px, and the space she has to fly through is
 // GAP_MIN − 2R. Let those get close and the game stops being hard and starts
 // being frame-perfect, which is a different (worse) game.
-const GAP_START  = 155;   // tight from the first pipe
-const GAP_MIN    = 116;   // 74px of room vs a 53px flap — about as low as
-                          // this flap can go before it turns frame-perfect
-const GAP_STEP   = 9;     // floor lands at pipe 5, so the ramp is short
-const SPEED_START = 170;  // px/s — and the speed keeps climbing long after
-const SPEED_STEP  = 9;    // the gap has bottomed out, which is what carries
-const SPEED_MAX   = 320;  // the difficulty for a good player
+const GAP_START  = 185;   // roomy for the first few — the on-ramp matters
+const GAP_MIN    = 132;   // 90px of room vs a 53px flap
+const GAP_STEP   = 6;     // floor lands around pipe 9, so the squeeze is felt
+                          // gradually rather than arriving all at once
+const SPEED_START = 150;  // px/s — starts gentle, but the speed keeps climbing
+const SPEED_STEP  = 8;    // long after the gap has bottomed out, and that is
+const SPEED_MAX   = 320;  // what carries the difficulty for a good player
 
 // How far the gap centre may move between consecutive pipes. The cap exists
 // so the tightest gaps don't ALSO demand the biggest climbs, but it has an

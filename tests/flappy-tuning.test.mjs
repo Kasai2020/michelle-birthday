@@ -85,10 +85,19 @@ test("the gap narrows as you score, then floors", () => {
   assert.equal(gapFor(100), GAP_MIN, "must floor rather than invert");
   assert.equal(gapFor(1e6), GAP_MIN);
 });
-test("the opening gap is tight but flyable", () => {
+test("the opening gap is comfortably flyable", () => {
   const band = GAP_START - 2 * R;
   assert.ok(band > riseFor * 1.6, `opening band ${band}px vs a ${Math.round(riseFor)}px flap`);
-  assert.ok(band < riseFor * 2.6, "opening gap is too generous — this is meant to bite early");
+});
+test("the squeeze is felt gradually, not all at once", () => {
+  // Deliberately a RANGE, not a target. How tight it should feel is taste and
+  // has changed direction more than once; what stays true is that there has
+  // to BE a ramp — an instant floor is just a hard game with a fake ramp, and
+  // one that never lands leaves the difficulty entirely to the speed.
+  const pipesToFloor = Math.ceil((GAP_START - GAP_MIN) / TUNING.GAP_STEP);
+  assert.ok(GAP_START > GAP_MIN, "there has to be a ramp at all");
+  assert.ok(pipesToFloor >= 4 && pipesToFloor <= 15,
+    `floor arrives at pipe ${pipesToFloor} — outside the 4–15 window`);
 });
 test(`the floor respects the flap: ${Math.round(GAP_MIN - 2 * R)}px of room for a ${Math.round(riseFor)}px flap`, () => {
   const band = GAP_MIN - 2 * R;

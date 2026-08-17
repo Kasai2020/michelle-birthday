@@ -159,11 +159,11 @@ Design notes worth keeping if you tweak them:
   is exactly the person who needs the round to be fun.
 - **There's always a way out.** A "Sit this one out" / "Lock in" button stays
   on screen even mid-run, so nobody is trapped in a game they don't want.
-- **Flappy's gap narrows as you score** (155px → 116px by pipe 5) and the
-  pipes keep speeding up long after (170 → 320 px/s), which is what carries
+- **Flappy's gap narrows as you score** (185px → 132px by pipe 9) and the
+  pipes keep speeding up long after (150 → 320 px/s), which is what carries
   the difficulty once the gap has bottomed out. `GAP_MIN` is set from
   geometry, not taste: one flap lifts her `FLAP²/(2·GRAVITY)` ≈ 53px, and
-  she has `GAP_MIN − 2R` = 74px to fly through. Let those two numbers
+  she has `GAP_MIN − 2R` = 90px to fly through. Let those two numbers
   converge and it stops being hard and starts being frame-perfect.
   `tests/flappy-tuning.test.mjs` guards that ratio — **to make the floor
   tighter you have to soften the flap first**, or the test will (correctly)
