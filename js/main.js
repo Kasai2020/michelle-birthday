@@ -45,7 +45,18 @@ let unsubs = [];            // active firebase listeners
 let stepUnsubs = [];        // listeners scoped to the current step
 let watchedStep = null;     // which step stepUnsubs are pointed at
 let tickHandle = null;      // countdown interval
-let advancing = false;      // guards against double phase transitions
+/**
+ * Guards against firing two phase transitions at once. It is a TIMESTAMP, not
+ * a boolean, and deliberately so: as a boolean it latched. A phase write that
+ * failed or whose echo never arrived left it stuck true forever, which
+ * silently killed auto-advance AND the host's Next button for the rest of the
+ * game — the round just sat at 0 seconds with nothing able to move it.
+ */
+let advanceLock = 0;
+const ADVANCE_TIMEOUT = 4000;   // ms before we assume a transition died
+const isAdvancing = () => advanceLock && now() - advanceLock < ADVANCE_TIMEOUT;
+const beginAdvance = () => { advanceLock = now(); };
+const endAdvance = () => { advanceLock = 0; };
 
 const stepAt = (i) => STEPS[i] || null;
 const currentStep = () => stepAt(room.state?.step ?? -1);
@@ -221,7 +232,7 @@ function onStateChange(state) {
     room.locked = {};
   }
   ensureStepWatches();
-  advancing = false;
+  endAdvance();
   render();
 }
 
@@ -255,7 +266,12 @@ function ensureStepWatches(force = false) {
 
 // ── Host: phase machine ──────────────────────────────────────────────
 
-const write = (patch) => setState(room.code, { ...room.state, ...patch });
+const write = (patch) =>
+  setState(room.code, { ...room.state, ...patch }).catch((e) => {
+    console.error("phase write failed", e);
+    endAdvance();
+    toast("Couldn't sync — tap Next again");
+  });
 
 function hostStart() {
   if (!STEPS.length) { toast("No questions in data/content.js!"); return; }
@@ -286,7 +302,7 @@ function askQuestion(i) {
  * has genuinely wandered off, and the host can always hit "Skip ahead".
  */
 function maybeAutoReveal() {
-  if (!isHost || advancing) return;
+  if (!isHost || isAdvancing()) return;
   const st = room.state;
   if (st?.phase !== "question") return;
 
@@ -299,9 +315,9 @@ const lockCount = () => ({
   total: Object.keys(room.players || {}).length,
 });
 
-async function doReveal() {
-  if (advancing) return;
-  advancing = true;
+async function doReveal(force = false) {
+  if (!force && isAdvancing()) return;
+  beginAdvance();
   const st = room.state;
   const step = stepAt(st.step);
   try {
@@ -311,19 +327,29 @@ async function doReveal() {
     await applyScores(room.code, deltas);
     await write({ phase: "reveal", step: st.step, sub: "" });
   } catch (e) {
-    toast("Scoring hiccup — tap Next");
+    // Move the room on regardless. A round that can't be scored is a bad
+    // round; a round nobody can leave ends the party.
     console.error(e);
-  } finally { advancing = false; }
+    toast("Couldn't score that one — moving on");
+    endAdvance();
+    await write({ phase: "reveal", step: st.step, sub: "" }).catch(() => {});
+  }
 }
 
-/** The host's "Next ▸" button — meaning depends on the current phase. */
+/**
+ * The host's "Next ▸" button — meaning depends on the current phase.
+ *
+ * A human pressing a button always wins. It clears the advance lock first, so
+ * a wedged transition can never make this button do nothing.
+ */
 function hostNext() {
   const st = room.state;
   if (!st) return;
+  endAdvance();
   const i = st.step;
 
   if (st.phase === "intro")    { askQuestion(i); return; }
-  if (st.phase === "question") { doReveal(); return; }
+  if (st.phase === "question") { doReveal(true); return; }
 
   if (st.phase === "reveal") {
     const next = stepAt(i + 1);
@@ -357,7 +383,7 @@ function tick() {
     if (left <= 0) renderStage();
     if (isHost) maybeAutoReveal();
   } else if (st.phase === "intro" && isHost && now() >= (st.endsAt || 0)) {
-    if (!advancing) { advancing = true; askQuestion(st.step); }
+    if (!isAdvancing()) { beginAdvance(); askQuestion(st.step); }
   }
 }
 

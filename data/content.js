@@ -267,9 +267,9 @@ export const ROUNDS = [
         answer: 2,
       },
       {
-        q: "\u201cFavourite Harry Potter movie?\u201d",
-        options: ["Goblet of Fire", "Prisoner of Azkaban", "Half-Blood Prince", "Deathly Hallows Pt 2"],
-        answer: 1,
+        q: "\u201cFavourite Harry Potter character?\u201d",
+        options: ["Remus Lupin", "Luna Lovegood", "Sirius Black", "Severus Snape"],
+        answer: 2,
       },
     ],
   },
