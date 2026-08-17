@@ -1,6 +1,6 @@
 // Multiple choice trivia. Answer value = index of the chosen option.
 
-import { el, clamp } from "../ui.js";
+import { el, clamp, qText } from "../ui.js";
 import { SCORING } from "../../data/content.js";
 
 const LETTERS = ["A", "B", "C", "D", "E", "F"];
@@ -9,7 +9,7 @@ export function render(step, ctx) {
   const q = step.data;
   return el("div", {},
     q.image && el("img.qimg", { src: q.image, alt: "", loading: "eager" }),
-    el("div.qtext", {}, q.q),
+    qText(q.q),
     el("div.options", {},
       q.options.map((text, i) =>
         el("button.opt", {
@@ -57,7 +57,7 @@ export function reveal(step, result, ctx) {
 
   return el("div", {},
     verdict(mine, "You didn't answer in time 😴"),
-    el("div.qtext", {}, q.q),
+    qText(q.q),
     el("div.options", {},
       q.options.map((text, i) => {
         const picked = mine && mine.v === i;

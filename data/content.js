@@ -42,8 +42,10 @@ export const ROUNDS = [
     duration: 20,
     questions: [
       {
-        q: "Michelle's most-watched movie?",
-        options: ["The Devil Wears Prada", "Mamma Mia!", "27 Dresses", "The Proposal"],
+        // Negation question — the renderer highlights the NOT so nobody
+        // reads straight past it.
+        q: "Which of these did Michelle NOT watch multiple times in theatres?",
+        options: ["Dune: Part Two", "Sinners", "Wicked (Part One)", "Anora"],
         answer: 3,
       },
       {

@@ -651,3 +651,11 @@ input[type="range"]::-moz-range-thumb {
 /* Flappy: the score chip flashes pink while the gap is still tightening,
    then settles on acid yellow once the ramp has bottomed out. */
 .mg-hud.tightening { background: var(--pink); color: var(--bone); }
+
+/* Negations in a question, pulled out of the uppercase run so they can't be
+   read past. Misreading a "NOT" question is the classic quiz-night grievance. */
+.qtext .neg {
+  color: var(--acid);
+  border-bottom: 3px solid var(--acid);
+  padding-bottom: 1px;
+}

@@ -52,6 +52,20 @@ export function toast(msg, ms = 2200) {
   toastTimer = setTimeout(() => { t.hidden = true; }, ms);
 }
 
+/**
+ * Question text with negations picked out.
+ *
+ * `.qtext` is uppercased by the stylesheet, so a "NOT" sits at exactly the
+ * same weight as every other word and is trivially misread — which on a
+ * negation question means answering the opposite of what was asked. This
+ * pulls those words out in acid yellow.
+ */
+export function qText(str) {
+  const parts = String(str).split(/\b(not|never|didn't|doesn't|except)\b/i);
+  return el("div.qtext", {},
+    parts.map((part, i) => (i % 2 ? el("span.neg", {}, part) : part)));
+}
+
 export const waiting = (msg, sub) =>
   el("div.waiting", {},
     el("div.spin", {}, "🎲"),

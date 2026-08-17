@@ -1,7 +1,7 @@
 // "Hive Mind" — there is no correct answer. You score by matching whatever
 // the majority of the room picked. Answer value = option index.
 
-import { el } from "../ui.js";
+import { el, qText } from "../ui.js";
 import { SCORING } from "../../data/content.js";
 
 const LETTERS = ["A", "B", "C", "D", "E", "F"];
@@ -9,7 +9,7 @@ const LETTERS = ["A", "B", "C", "D", "E", "F"];
 export function render(step, ctx) {
   const q = step.data;
   return el("div", {},
-    el("div.qtext", {}, q.q),
+    qText(q.q),
     el("p.muted.small", {}, "🐝 No right answer — score by matching the crowd."),
     el("div.options", {},
       q.options.map((text, i) =>
@@ -56,7 +56,7 @@ export function reveal(step, result, ctx) {
           el("div.v-text", {}, mine.ok ? "You're with the hive!" : "Lone wolf"),
           el("div.v-pts", {}, `+${mine.pts}`))
       : el("div.verdict.bad", {}, el("div.v-emoji", {}, "🫥"), el("div.v-text", {}, "No answer 😴")),
-    el("div.qtext", {}, q.q),
+    qText(q.q),
     el("div.options", {},
       q.options.map((text, i) => {
         const count = result.tally[i] || 0;
