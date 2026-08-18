@@ -261,9 +261,11 @@ export const ROUNDS = [
         answer: 1,
       },
       {
-        q: "\u201cWhat celebrity would you get dinner with?\u201d",
-        options: ["Timothée Chalamet", "Pedro Pascal", "Logan Lerman", "Andrew Garfield"],
-        answer: 2,
+        // Nicolas Cage is a joke option that happens to be true — he voiced
+        // Spider-Man Noir — so it reads as absurd without being wrong.
+        q: "\u201cFavourite Spider-Man?\u201d",
+        options: ["Tom Holland", "Andrew Garfield", "Tobey Maguire", "Nicolas Cage"],
+        answer: 1,
       },
       {
         q: "\u201cWhat is your go-to comfort show?\u201d",
